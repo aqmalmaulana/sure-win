@@ -9,10 +9,11 @@ export interface apiRouter {
     auth: boolean;
 }
 
-export interface customerModelsDoc extends Document {
-    _id: string;
+export interface ICustomer extends Document {
+    _id?: string;
     mobile_no: number;
     password: string;
-    created_date: Date;
-    last_updated: Date;
+    created_date?: Date;
+    last_updated?: Date;
+    delete_flag?: boolean;
 }

@@ -1,8 +1,8 @@
 import { model, Schema } from 'mongoose';
-import { customerModelsDoc } from '../interfaces';
+import { ICustomer } from '../interfaces';
 import bcrypt from 'bcrypt';
 
-const customerSchema = new Schema<customerModelsDoc>({
+const customerSchema = new Schema<ICustomer>({
     _id: {
         type: String
     },
@@ -14,7 +14,13 @@ const customerSchema = new Schema<customerModelsDoc>({
     password: {
         type: String,
         required: true
+    },
+    delete_flag: {
+        type: Boolean,
+        default: false
     }
+},{
+    timestamps: true
 })
 
 customerSchema.pre('save', async function () {
@@ -23,4 +29,4 @@ customerSchema.pre('save', async function () {
     }
 });
 
-export default model('customer', customerSchema)
+export default model<ICustomer>('customer', customerSchema)

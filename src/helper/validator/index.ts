@@ -12,14 +12,14 @@ export interface Validation {
 
 export class Validator {
     protected request: Request;
-    protected response: Response
+    protected response: Response;
     constructor(req: Request, res: Response) {
         this.request = req
         this.response = res
     }
 
-    public query(schema: Validation[]): any {
-        const result = this.checking(schema, 'query')
+    public process(schema: Validation[], type: "query" | "body" | "params"): any {
+        const result = this.checking(schema, type)
         if(!result.success) {
             this.response.status(400).send({
                 error: ErrorStatus.InvalidQuery,
@@ -28,7 +28,7 @@ export class Validator {
             return
         }
         return {
-            ...this.request['query']
+            ...this.request[type]
         }
     }
 
@@ -47,10 +47,9 @@ export class Validator {
         }
 
         for(const schema of schemas) {
-            const value = req[schema.name]?.trim()
-            console.log(!value)
+            let value = req[schema.name]
             
-            if((schema.required && validator.isEmpty(value)) || (schema.required && !req[schema.name])) {
+            if(schema.required && !req[schema.name]) {
                 result.message = `Field ${schema.name} is required`
                 return result
             } else if(!schema.required && !value) {
@@ -58,6 +57,7 @@ export class Validator {
             } else {
                 switch (schema.type) {
                     case 'string':
+                        value = value.trim()
                         if(typeof value !== "string") {
                             result.message = `Field ${schema.name} must be a string`
                             return result
@@ -71,22 +71,15 @@ export class Validator {
                         break;
                     
                     case 'number':
-                        if(!validator.isNumeric(value)) {
+                        if(typeof value !== "number") {
                             result.message = `Field ${schema.name} must be number`
                             return result
                         }
                         break;
                     
-                    case 'number':
-                        if(!validator.isNumeric(value)) {
-                            result.message = `Field ${schema.name} must be number`
-                            return result
-                        }
-                        break;
-                    
-                    case 'number':
-                        if(!validator.isNumeric(value)) {
-                            result.message = `Field ${schema.name} must be number`
+                    case 'boolean':
+                        if(typeof value !== "boolean") {
+                            result.message = `Field ${schema.name} must be boolean`
                             return result
                         }
                         break;

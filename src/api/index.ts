@@ -2,13 +2,13 @@ import {Router} from 'express';
 import { authorization } from '../middlewares/auth';
 import getCustomer from './customer/getCustomer';
 import getTest from "./customer/getTest";
-import postTest from "./customer/postCustomerRegistration";
+import postCustomer from "./customer/postCustomer";
 
 let router = Router()
 
 const apis = [
     getTest,
-    postTest,
+    postCustomer,
     getCustomer
 ]
 

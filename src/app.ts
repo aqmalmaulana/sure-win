@@ -10,7 +10,8 @@ const getApp = (app: Application)=> {
   app.use(router)
   app.use("*", (req: Request, res: Response)=> {
     res.send({
-      time: new Date()
+      time: new Date(),
+      message: "Cannot find path " + req.originalUrl
     })
   })
 }

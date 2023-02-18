@@ -27,7 +27,7 @@ const main = async(req: Request, res: Response) => {
     const query: {
         name: string;
         umur: number;
-    } = validate.query(schemaValidation)
+    } = validate.process(schemaValidation, "query")
 
     console.log(query)
 }
