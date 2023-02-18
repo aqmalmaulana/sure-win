@@ -1,7 +1,7 @@
 import express, { Application, Express, Request, Response } from 'express';
-import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import router from './api';
+import "./database"
 
 const getApp = (app: Application)=> {
   app.use(bodyParser.json());

@@ -1,10 +1,23 @@
 import { model, Schema } from 'mongoose';
-import { ICustomer } from '../interfaces';
 import bcrypt from 'bcrypt';
+
+export interface ICustomer extends Document {
+    _id?: string;
+    name?: string;
+    mobile_no: number;
+    password: string;
+    createdAt?: Date;
+    updatedAt?: Date;
+    delete_flag?: boolean;
+}
 
 const customerSchema = new Schema<ICustomer>({
     _id: {
         type: String
+    },
+    name: {
+        type: String,
+        default: ""
     },
     mobile_no:{
         type: Number,
@@ -20,7 +33,8 @@ const customerSchema = new Schema<ICustomer>({
         default: false
     }
 },{
-    timestamps: true
+    timestamps: true,
+    versionKey: false
 })
 
 customerSchema.pre('save', async function () {

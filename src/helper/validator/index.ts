@@ -8,6 +8,7 @@ export interface Validation {
     minLength?: number;
     maxLength?: number;
     type?: "string" | "number" | "boolean" | "array" | "object";
+    isMobileNo?: boolean;
 }
 
 export class Validator {
@@ -21,14 +22,15 @@ export class Validator {
     public process(schema: Validation[], type: "query" | "body" | "params"): any {
         const result = this.checking(schema, type)
         if(!result.success) {
-            this.response.status(400).send({
+            this.response.status(401).send({
                 error: ErrorStatus.InvalidQuery,
                 message: result.message
             })
-            return
-        }
-        return {
-            ...this.request[type]
+            return;
+        } else {
+            return {
+                ...this.request[type]
+            }
         }
     }
 
@@ -74,6 +76,19 @@ export class Validator {
                         if(typeof value !== "number") {
                             result.message = `Field ${schema.name} must be number`
                             return result
+                        }
+
+                        if(schema.isMobileNo) {
+                            let mobileNo = value.toString()
+                            if(!mobileNo.startsWith("0")) {
+                                mobileNo = "0" + mobileNo
+                            }
+                            console.log(mobileNo)
+                            const check = validator.isMobilePhone(mobileNo, "id-ID")
+                            if(!check) {
+                                result.message = `Mobile number not valid ${value}`
+                                return result
+                            }
                         }
                         break;
                     
