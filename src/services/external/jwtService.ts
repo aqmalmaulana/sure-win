@@ -12,8 +12,6 @@ export class JWTService {
     }
 
     public createAccessToken(data: any) {
-        console.log(data)
-        console.log(this.accessToken)
         return jwt.sign(data, this.accessToken, {
             expiresIn: "7d"
         })

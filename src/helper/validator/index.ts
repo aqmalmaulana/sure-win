@@ -83,7 +83,6 @@ export class Validator {
                             if(!mobileNo.startsWith("0")) {
                                 mobileNo = "0" + mobileNo
                             }
-                            console.log(mobileNo)
                             const check = validator.isMobilePhone(mobileNo, "id-ID")
                             if(!check) {
                                 result.message = `Mobile number not valid ${value}`

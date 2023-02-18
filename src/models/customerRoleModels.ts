@@ -14,15 +14,17 @@ const customerRoleSchema = new Schema<ICustomerRole>({
     },
     name: {
         type: String,
-        default: ""
+        required: true
     },
     rules: {
         type: String,
-        required: true
+        required: false,
+        default: ""
     },
     delete_flag: {
         type: Boolean,
-        required: true
+        required: false,
+        default: false
     }
 },{
     timestamps: true,

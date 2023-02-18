@@ -6,4 +6,5 @@ export interface ICustomerDto {
     createdAt?: Date;
     updatedAt?: Date;
     delete_flag?: boolean;
+    roleId?: string;
 }

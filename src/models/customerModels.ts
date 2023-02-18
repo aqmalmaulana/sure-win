@@ -9,6 +9,7 @@ export interface ICustomer extends Document {
     createdAt?: Date;
     updatedAt?: Date;
     delete_flag?: boolean;
+    roleId?: string;
 }
 
 const customerSchema = new Schema<ICustomer>({
@@ -31,6 +32,9 @@ const customerSchema = new Schema<ICustomer>({
     delete_flag: {
         type: Boolean,
         default: false
+    },
+    roleId: {
+        type: String,
     }
 },{
     timestamps: true,

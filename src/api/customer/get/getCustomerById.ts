@@ -24,16 +24,23 @@ const main = async(req: Request, res: Response) => {
 
     const customerService = new CustomerService()
     let customer = await customerService.findById(query.id)
+    console.log(customer)
     if(!customer) {
         res.status(401).send({
             error: ErrorStatus.CustomerNotFound,
             message: "Invalid user"
         })
+        return
     }
     
     const duplicate = JSON.parse(JSON.stringify(customer))
     for(const key in duplicate) {
         if(key === "password" || key === "delete_flag") {
+            delete duplicate[key]
+        }
+        if(key === "_id") {
+            duplicate["id"] = duplicate[key]
+
             delete duplicate[key]
         }
     }

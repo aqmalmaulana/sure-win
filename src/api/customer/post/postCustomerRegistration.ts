@@ -4,6 +4,7 @@ import { Validation, Validator } from '../../../helper/validator';
 import { apiRouter } from '../../../interfaces';
 import { CustomerService } from '../../../services/internal/customerService';
 import { v4 as uuid } from 'uuid';
+import { CustomerRoleService } from '../../../services/internal/customerRoleService';
 
 const path = "/v1/customer/registration"
 const method = "POST"
@@ -30,6 +31,7 @@ const main = async(req: Request, res: Response) => {
         return;
     }
     const customerService = new CustomerService()
+    const roleService = new CustomerRoleService()
     
     const existCustomer = await customerService.findByMobileNo(requestBody.mobileNo)
     if(existCustomer) {
@@ -39,12 +41,14 @@ const main = async(req: Request, res: Response) => {
         })
         return
     }
+    const userRole = await roleService.findByName("user")
 
     const newCustomer = await customerService.create({
         _id: uuid(),
         name: "",
         mobile_no: requestBody.mobileNo,
-        password: requestBody.password
+        password: requestBody.password,
+        roleId: userRole._id
     })
 
     return res.status(200).send({

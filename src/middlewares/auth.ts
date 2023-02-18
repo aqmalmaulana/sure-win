@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { ErrorStatus } from "../enum";
+import { ErrorStatus, RoleID } from "../enum";
 import { JWTService } from "../services/external/jwtService";
 
 export const authorization = (req: Request, res: Response, next: NextFunction) => {
@@ -8,8 +8,10 @@ export const authorization = (req: Request, res: Response, next: NextFunction) =
         const token = auth.split(" ")[1]
         try {
             const jwtService = new JWTService()
-            const check = jwtService.verifyAccessToken(token)
-            console.log(check)
+            const check: any = jwtService.verifyAccessToken(token)
+            if(check?.roleId !== RoleID.User && check?.roleId !== RoleID.Admin) {
+                return res.sendStatus(401)
+            }
         } catch (error) {
             return res.status(401).send({
                 error: ErrorStatus.JWTInvalidToken,

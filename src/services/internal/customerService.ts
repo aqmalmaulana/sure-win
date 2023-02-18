@@ -15,23 +15,43 @@ export class CustomerService{
     }
 
     async update(data: ICustomerDto): Promise<ICustomerDto> {
-        return await this.customer.findByIdAndUpdate(data._id, data)
+        return await this.customer.findOneAndUpdate({
+            $and: [
+                { _id: data._id },
+                { delete_flag: false }
+            ]
+        }, data,
+        { new: true })
     }
 
     async delete(id: string): Promise<ICustomerDto>{
-        const customer = await this.customer.findById(id)
-        customer.delete_flag = true
-
-        return await customer.updateOne(customer)
+        return await this.customer.findOneAndUpdate({
+            $and: [
+                { _id: id },
+                { delete_flag: false }
+            ]
+        },
+        {
+            delete_flag: true
+        },
+        { new: true })
     }
 
     async findById(id: string): Promise<ICustomerDto> {
-        return await this.customer.findById(id)
+        return await this.customer.findOne({
+            $and: [
+                { _id: id },
+                { delete_flag: false }
+            ]
+        })
     }
 
     async findByMobileNo(mobileNo: number): Promise<ICustomerDto> {
         return await this.customer.findOne({
-            mobile_no: mobileNo,
+            $and: [
+                { mobile_no: mobileNo },
+                { delete_flag: false }
+            ]
         })
     }
 

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { ICustomerDto } from '../../../dto/customerDto';
-import { ErrorStatus } from '../../../enum';
+import { ErrorStatus, RoleID } from '../../../enum';
 import { Validation, Validator } from '../../../helper/validator';
 import { apiRouter } from '../../../interfaces';
 import { JWTService } from '../../../services/external/jwtService';
@@ -41,8 +41,8 @@ const main = async(req: Request, res: Response) => {
         })
         return
     }
-    const accessToken = jwtService.createAccessToken({id: existCustomer._id})
-    const refreshToken = jwtService.createRefreshToken({id: existCustomer._id})
+    const accessToken = jwtService.createAccessToken({id: existCustomer._id, roleId: existCustomer.roleId})
+    const refreshToken = jwtService.createRefreshToken({id: existCustomer._id, roleId: existCustomer.roleId})
 
     res.cookie("cookie", refreshToken, {
         httpOnly: true,

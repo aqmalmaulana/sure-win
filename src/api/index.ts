@@ -1,5 +1,7 @@
 import {Router} from 'express';
 import { authorization } from '../middlewares/auth';
+import { authAdmin } from '../middlewares/authAdmin';
+import deleteCustomer from './customer/detele/deleteCustomer';
 import getCustomerById from './customer/get/getCustomerById';
 import postCustomerLogin from './customer/post/postCustomerLogin';
 import postCustomerRegister from './customer/post/postCustomerRegistration';
@@ -11,7 +13,8 @@ const apis = [
     postCustomerLogin,
     postCustomerRegister,
     getCustomerById,
-    putCustomerRegister
+    putCustomerRegister,
+    deleteCustomer
 ]
 
 for(const api of apis) {
@@ -21,7 +24,7 @@ for(const api of apis) {
     const method = api.method.toLocaleLowerCase()
 
     if(api.authAdmin) {
-        router[method](`${api.path}`, authorization, api.main)
+        router[method](`${api.path}`, authAdmin , api.main)
     } else if(api.auth) {
         router[method](`${api.path}`, authorization , api.main )
     } else {

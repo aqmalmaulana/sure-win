@@ -13,6 +13,10 @@ export class CustomerRoleService{
         return await this.role.create(data)
     }
 
+    async createBulk(data: ICustomerRoleDto[]): Promise<ICustomerRoleDto[]> {
+        return await this.role.insertMany(data)
+    }
+
     async update(data: ICustomerRoleDto): Promise<ICustomerRoleDto> {
         return await this.role.findByIdAndUpdate(data._id, data)
     }
@@ -32,5 +36,9 @@ export class CustomerRoleService{
         return await this.role.findOne({
             name
         })
+    }
+
+    async findAll(): Promise<ICustomerRoleDto[]> {
+        return await this.role.find()
     }
 }
