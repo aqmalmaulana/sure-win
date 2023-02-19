@@ -1,7 +1,7 @@
 import { Config } from "../../config";
 import jwt from "jsonwebtoken";
 
-export class JWTService {
+export class ExternalJWTService {
     private accessToken: string;
     private refreshToken: string
 

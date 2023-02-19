@@ -7,4 +7,7 @@ export class Config {
     public accountSidTwilio = process.env.SID_TWILIO;
     public authTokenTwilio = process.env.TOKEN_TWILIO;
     public fromMobileNo = process.env.FROM_MOBILE_NO;
+
+    public xenditApiKey = process.env.XENDIT_API_KEY
+    public xenditApiUrl = process.env.XENDIT_API_URL
 }

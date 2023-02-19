@@ -3,7 +3,7 @@ import { ICustomerDto } from '../../../dto/customerDto';
 import { ErrorStatus, RoleID } from '../../../enum';
 import { Validation, Validator } from '../../../helper/validator';
 import { apiRouter } from '../../../interfaces';
-import { JWTService } from '../../../services/external/jwtService';
+import { ExternalJWTService } from '../../../services/external/externalJWTService';
 import { CustomerService } from '../../../services/internal/customerService';
 
 const path = "/v1/customer/login"
@@ -31,7 +31,7 @@ const main = async(req: Request, res: Response) => {
         return;
     }
     const customerService = new CustomerService()
-    const jwtService = new JWTService()
+    const externalJWTService = new ExternalJWTService()
     
     const existCustomer: ICustomerDto = await customerService.findByMobileNoAndPassword(requestBody.mobileNo, requestBody.password)
     if(!existCustomer) {
@@ -41,8 +41,8 @@ const main = async(req: Request, res: Response) => {
         })
         return
     }
-    const accessToken = jwtService.createAccessToken({id: existCustomer._id, roleId: existCustomer.roleId})
-    const refreshToken = jwtService.createRefreshToken({id: existCustomer._id, roleId: existCustomer.roleId})
+    const accessToken = externalJWTService.createAccessToken({id: existCustomer._id, roleId: existCustomer.roleId})
+    const refreshToken = externalJWTService.createRefreshToken({id: existCustomer._id, roleId: existCustomer.roleId})
 
     res.cookie("cookie", refreshToken, {
         httpOnly: true,

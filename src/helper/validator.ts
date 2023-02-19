@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import validator from "validator"
-import { ErrorStatus } from "../../enum";
+import { ErrorStatus } from "../enum";
 
 export interface Validation {
     name?: string;

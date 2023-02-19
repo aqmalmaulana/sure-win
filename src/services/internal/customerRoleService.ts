@@ -22,10 +22,11 @@ export class CustomerRoleService{
     }
 
     async delete(id: string): Promise<ICustomerRoleDto>{
-        const role = await this.role.findById(id)
-        role.delete_flag = true;
-
-        return await role.updateOne(role)
+        return await this.role.findOneAndUpdate(
+            {_id: id},
+            {deleteFlag: true},
+            {new: true}
+        )
     }
 
     async findById(id: string): Promise<ICustomerRoleDto> {

@@ -5,7 +5,7 @@ export interface ICustomerRole extends Document {
     _id?: string;
     name?: string;
     rules?: string;
-    delete_flag?: boolean;
+    deleteFlag?: boolean;
 }
 
 const customerRoleSchema = new Schema<ICustomerRole>({
@@ -21,7 +21,7 @@ const customerRoleSchema = new Schema<ICustomerRole>({
         required: false,
         default: ""
     },
-    delete_flag: {
+    deleteFlag: {
         type: Boolean,
         required: false,
         default: false

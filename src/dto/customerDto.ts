@@ -1,10 +1,11 @@
 export interface ICustomerDto {
     _id: string;
     name?: string;
-    mobile_no: number;
+    mobileNo?: number;
     password?: string;
     createdAt?: Date;
     updatedAt?: Date;
-    delete_flag?: boolean;
+    deleteFlag?: boolean;
     roleId?: string;
+    accountNo?: string;
 }

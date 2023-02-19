@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { ErrorStatus, RoleID } from "../enum";
-import { JWTService } from "../services/external/jwtService";
+import { ExternalJWTService } from "../services/external/externalJWTService";
 
 export const authorization = (req: Request, res: Response, next: NextFunction) => {
     const auth = req.headers?.authorization
     if(auth) {
         const token = auth.split(" ")[1]
         try {
-            const jwtService = new JWTService()
-            const check: any = jwtService.verifyAccessToken(token)
+            const externalJWTService = new ExternalJWTService()
+            const check: any = externalJWTService.verifyAccessToken(token)
             if(check?.roleId !== RoleID.User && check?.roleId !== RoleID.Admin) {
                 return res.sendStatus(401)
             }

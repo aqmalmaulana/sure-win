@@ -4,12 +4,13 @@ import bcrypt from 'bcrypt';
 export interface ICustomer extends Document {
     _id?: string;
     name?: string;
-    mobile_no: number;
+    mobileNo: number;
     password: string;
     createdAt?: Date;
     updatedAt?: Date;
-    delete_flag?: boolean;
+    deleteFlag?: boolean;
     roleId?: string;
+    accountNo?: string;
 }
 
 const customerSchema = new Schema<ICustomer>({
@@ -20,7 +21,7 @@ const customerSchema = new Schema<ICustomer>({
         type: String,
         default: ""
     },
-    mobile_no:{
+    mobileNo:{
         type: Number,
         required: true,
         unique: true
@@ -29,12 +30,15 @@ const customerSchema = new Schema<ICustomer>({
         type: String,
         required: true
     },
-    delete_flag: {
+    deleteFlag: {
         type: Boolean,
         default: false
     },
     roleId: {
         type: String,
+    },
+    accountNo: {
+        type: String
     }
 },{
     timestamps: true,

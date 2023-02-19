@@ -18,7 +18,7 @@ export class CustomerService{
         return await this.customer.findOneAndUpdate({
             $and: [
                 { _id: data._id },
-                { delete_flag: false }
+                { deleteFlag: false }
             ]
         }, data,
         { new: true })
@@ -28,11 +28,11 @@ export class CustomerService{
         return await this.customer.findOneAndUpdate({
             $and: [
                 { _id: id },
-                { delete_flag: false }
+                { deleteFlag: false }
             ]
         },
         {
-            delete_flag: true
+            deleteFlag: true
         },
         { new: true })
     }
@@ -41,7 +41,7 @@ export class CustomerService{
         return await this.customer.findOne({
             $and: [
                 { _id: id },
-                { delete_flag: false }
+                { deleteFlag: false }
             ]
         })
     }
@@ -49,8 +49,8 @@ export class CustomerService{
     async findByMobileNo(mobileNo: number): Promise<ICustomerDto> {
         return await this.customer.findOne({
             $and: [
-                { mobile_no: mobileNo },
-                { delete_flag: false }
+                { mobileNo: mobileNo },
+                { deleteFlag: false }
             ]
         })
     }
@@ -66,5 +66,9 @@ export class CustomerService{
         }
 
         return customer
+    }
+
+    async getLastIdCustomer(): Promise<ICustomerDto> {
+        return await this.customer.findOne({}).sort({accountNo: -1})
     }
 }

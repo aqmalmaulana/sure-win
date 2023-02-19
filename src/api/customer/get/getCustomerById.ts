@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { ErrorStatus } from '../../../enum';
 import { Validation, Validator } from '../../../helper/validator';
 import { apiRouter } from '../../../interfaces';
+import { ExternalXenditService } from '../../../services/external/externalXenditSevice';
 import { CustomerService } from '../../../services/internal/customerService';
 
 const path = "/v1/customer/:id"
@@ -32,7 +33,8 @@ const main = async(req: Request, res: Response) => {
         })
         return
     }
-    
+    const result = await new ExternalXenditService().deleteCustomer("cust-85292a41-af2b-46e7-b014-11b35f8d5bdd")
+    console.log(result)
     const duplicate = JSON.parse(JSON.stringify(customer))
     for(const key in duplicate) {
         if(key === "password" || key === "delete_flag") {

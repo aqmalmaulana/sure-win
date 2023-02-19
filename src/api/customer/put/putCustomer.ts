@@ -49,7 +49,7 @@ const main = async(req: Request, res: Response) => {
     const updateCustomer = await customerService.update({
         _id: existCustomer._id,
         name: requestBody.name,
-        mobile_no: requestBody.mobileNo,
+        mobileNo: requestBody.mobileNo,
     })
 
     const duplicate = JSON.parse(JSON.stringify(updateCustomer))
