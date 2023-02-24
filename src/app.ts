@@ -6,7 +6,6 @@ import "./database"
 const getApp = (app: Application)=> {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
-
   app.use(router)
   app.use("*", (req: Request, res: Response)=> {
     res.send({

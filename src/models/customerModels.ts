@@ -1,21 +1,21 @@
-import { model, Schema } from 'mongoose';
+import { Document, model, Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 export interface ICustomer extends Document {
-    _id?: string;
-    name?: string;
+    id: string;
+    name: string;
     mobileNo: number;
     password: string;
-    createdAt?: Date;
-    updatedAt?: Date;
-    deleteFlag?: boolean;
-    roleId?: string;
-    accountNo?: string;
+    createdDate: Date;
+    updatedDate: Date;
+    deleteFlag: boolean;
+    roleId: string;
+    accountNo: string;
 }
 
 const customerSchema = new Schema<ICustomer>({
     _id: {
-        type: String
+        type: String,
     },
     name: {
         type: String,
@@ -38,11 +38,18 @@ const customerSchema = new Schema<ICustomer>({
         type: String,
     },
     accountNo: {
-        type: String
+        type: String,
+        unique: true
+    },
+    createdDate: {
+        type: Date,
+    },
+    updatedDate: {
+        type: Date
     }
 },{
-    timestamps: true,
-    versionKey: false
+    versionKey: false,
+    virtuals: true
 })
 
 customerSchema.pre('save', async function () {
@@ -50,5 +57,9 @@ customerSchema.pre('save', async function () {
       this.password = await bcrypt.hash(this.password, 10);
     }
 });
+
+customerSchema.virtual('id').get(function() {
+    return this._id
+})
 
 export default model<ICustomer>('customer', customerSchema)

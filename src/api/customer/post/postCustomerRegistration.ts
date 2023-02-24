@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import { ErrorStatus, RoleID } from '../../../enum';
 import { Validation, Validator } from '../../../helper/validator';
-import { apiRouter } from '../../../interfaces';
 import { CustomerService } from '../../../services/internal/customerService';
 import { v4 as uuid } from 'uuid';
 import { CustomerRoleService } from '../../../services/internal/customerRoleService';
-import { generateAccountNo } from '../../../helper/generateAccountNo';
+import { UniqueGenerator } from '../../../helper/generateNumber';
 import { ExternalXenditService } from '../../../services/external/externalXenditSevice';
 import { CustomerXenditService } from '../../../services/internal/customerXenditService';
+import { apiRouter } from '../../../interfaces';
 
 const path = "/v1/customer/registration"
 const method = "POST"
@@ -52,22 +52,24 @@ const main = async(req: Request, res: Response) => {
         return
     }
     const userRole = await roleService.findByName("user")
-    const accountNo = await generateAccountNo()
+    const accountNo = await UniqueGenerator.accountNo()
 
     const newCustomer = await customerService.create({
-        _id: uuid(),
+        id: uuid(),
         name: requestBody.fullname,
         mobileNo: requestBody.mobileNo,
         password: requestBody.password,
-        roleId: userRole?._id || RoleID.User,
-        accountNo
+        roleId: userRole?.id || RoleID.User,
+        accountNo,
+        createdDate: new Date(),
+        updatedDate: new Date()
     })
-    
+
     const customerXendit = await externalXenditSevice.postCustomer({
         accountNo: newCustomer.accountNo,
         name: newCustomer.name,
         mobileNumber: newCustomer.mobileNo,
-        description: `Customer SUREWIN with id=${newCustomer._id}`
+        description: `New Customer`
     })
     console.log("response Xendit")
     console.log(customerXendit)
@@ -78,12 +80,9 @@ const main = async(req: Request, res: Response) => {
 
     const customerXenditService = new CustomerXenditService()
     await customerXenditService.create({
-        _id: customerXendit.id,
-        cifId: newCustomer._id,
+        id: customerXendit.id,
         accountNo: newCustomer.accountNo,
         type: customerXendit.type,
-        createdAt: customerXendit.created,
-        updatedAt: customerXendit.updated
     })
 
     return res.status(200).send({

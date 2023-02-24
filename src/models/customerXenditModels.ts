@@ -1,21 +1,13 @@
-import { model, Schema } from 'mongoose';
-import bcrypt from 'bcrypt';
+import { Document, model, Schema } from 'mongoose';
 
 export interface ICustomerXendit extends Document {
-    _id?: string;
-    cifId?: string;
-    accountNo?: string;
-    type?: string;
+    accountNo: string;
+    type: string;
 }
 
 const customerXenditSchema = new Schema<ICustomerXendit>({
     _id: {
         type: String
-    },
-    cifId: {
-        type: String,
-        default: "",
-        unique: true
     },
     accountNo:{
         type: String,
@@ -27,8 +19,12 @@ const customerXenditSchema = new Schema<ICustomerXendit>({
         required: true
     }
 },{
-    timestamps: true,
-    versionKey: false
+    versionKey: false,
+    virtuals: true
+})
+
+customerXenditSchema.virtual('id').get(function() {
+    return this._id
 })
 
 export default model<ICustomerXendit>('customerXendit', customerXenditSchema)

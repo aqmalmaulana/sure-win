@@ -1,6 +1,6 @@
-export interface ICustomerRoleDto {
-    _id: string;
-    name?: string;
-    rules?: string;
-    deleteFlag?: boolean;
+export class CustomerRoleDto {
+    public id: string;
+    public name: string;
+    public rules: string;
+    public deleteFlag: boolean;
 }

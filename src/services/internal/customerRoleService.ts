@@ -1,6 +1,6 @@
 import { Model } from "mongoose";
 import customerModels, { ICustomerRole } from "../../models/customerRoleModels";
-import { ICustomerRoleDto } from "../../dto/customerRoleDto";
+import { CustomerRoleDto } from "../../dto/customerRoleDto";
 
 export class CustomerRoleService{
     private role: Model<ICustomerRole>;
@@ -9,37 +9,46 @@ export class CustomerRoleService{
         this.role = customerModels
     }
 
-    async create(data: ICustomerRoleDto): Promise<ICustomerRoleDto> {
-        return await this.role.create(data)
+    async create(data: CustomerRoleDto): Promise<ICustomerRole> {
+        const clone = JSON.parse(JSON.stringify(data))
+        clone._id= clone.id
+        delete clone.id
+
+        return await this.role.create(clone)
     }
 
-    async createBulk(data: ICustomerRoleDto[]): Promise<ICustomerRoleDto[]> {
-        return await this.role.insertMany(data)
+    async createBulk(datas: CustomerRoleDto[]): Promise<ICustomerRole[]> {
+        const clone = JSON.parse(JSON.stringify(datas))
+        for(const data of clone) {
+            data._id = data.id
+            delete data.id
+        }
+        return await this.role.insertMany(clone)
     }
 
-    async update(data: ICustomerRoleDto): Promise<ICustomerRoleDto> {
-        return await this.role.findByIdAndUpdate(data._id, data)
+    async update(data: CustomerRoleDto): Promise<ICustomerRole> {
+        return await this.role.findByIdAndUpdate(data.id, data)
     }
 
-    async delete(id: string): Promise<ICustomerRoleDto>{
+    async delete(id: string): Promise<ICustomerRole>{
         return await this.role.findOneAndUpdate(
-            {_id: id},
+            {id: id},
             {deleteFlag: true},
             {new: true}
         )
     }
 
-    async findById(id: string): Promise<ICustomerRoleDto> {
+    async findById(id: string): Promise<ICustomerRole> {
         return await this.role.findById(id)
     }
 
-    async findByName(name: string): Promise<ICustomerRoleDto> {
+    async findByName(name: string): Promise<ICustomerRole> {
         return await this.role.findOne({
             name
         })
     }
 
-    async findAll(): Promise<ICustomerRoleDto[]> {
+    async findAll(): Promise<ICustomerRole[]> {
         return await this.role.find()
     }
 }

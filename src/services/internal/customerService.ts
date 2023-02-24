@@ -1,7 +1,7 @@
 import { Model } from "mongoose";
 import customerModels, { ICustomer } from "../../models/customerModels";
 import bcrypt from "bcrypt"
-import { ICustomerDto } from "../../dto/customerDto";
+import { CustomerDto } from "../../dto/customerDto";
 
 export class CustomerService{
     private customer: Model<ICustomer>;
@@ -10,24 +10,28 @@ export class CustomerService{
         this.customer = customerModels
     }
 
-    async create(data: ICustomerDto): Promise<ICustomerDto> {
-        return await this.customer.create(data)
+    async create(data: CustomerDto): Promise<ICustomer> {
+        const clone = JSON.parse(JSON.stringify(data))
+        clone._id= clone.id
+        delete clone.id
+
+        return await this.customer.create(clone)
     }
 
-    async update(data: ICustomerDto): Promise<ICustomerDto> {
+    async update(data: CustomerDto): Promise<ICustomer> {
         return await this.customer.findOneAndUpdate({
             $and: [
-                { _id: data._id },
+                { id: data.id },
                 { deleteFlag: false }
             ]
         }, data,
         { new: true })
     }
 
-    async delete(id: string): Promise<ICustomerDto>{
+    async delete(id: string): Promise<ICustomer>{
         return await this.customer.findOneAndUpdate({
             $and: [
-                { _id: id },
+                { id },
                 { deleteFlag: false }
             ]
         },
@@ -37,16 +41,16 @@ export class CustomerService{
         { new: true })
     }
 
-    async findById(id: string): Promise<ICustomerDto> {
+    async findById(id: string): Promise<ICustomer> {
         return await this.customer.findOne({
             $and: [
-                { _id: id },
+                { id },
                 { deleteFlag: false }
             ]
         })
     }
 
-    async findByMobileNo(mobileNo: number): Promise<ICustomerDto> {
+    async findByMobileNo(mobileNo: number): Promise<ICustomer> {
         return await this.customer.findOne({
             $and: [
                 { mobileNo: mobileNo },
@@ -55,7 +59,7 @@ export class CustomerService{
         })
     }
 
-    async findByMobileNoAndPassword(mobileNo: number, password: string): Promise<ICustomerDto | any> {
+    async findByMobileNoAndPassword(mobileNo: number, password: string): Promise<ICustomer | any> {
         const customer = await this.findByMobileNo(mobileNo)
         if(!customer) {
             return customer
@@ -68,7 +72,7 @@ export class CustomerService{
         return customer
     }
 
-    async getLastIdCustomer(): Promise<ICustomerDto> {
+    async getLastIdCustomer(): Promise<ICustomer> {
         return await this.customer.findOne({}).sort({accountNo: -1})
     }
 }

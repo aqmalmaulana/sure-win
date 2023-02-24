@@ -6,6 +6,7 @@ import getCustomerById from './customer/get/getCustomerById';
 import postCustomerLogin from './customer/post/postCustomerLogin';
 import postCustomerRegister from './customer/post/postCustomerRegistration';
 import putCustomerRegister from './customer/put/putCustomer';
+import postCashIn from './order/post/postCashin';
 
 let router = Router()
 
@@ -14,7 +15,8 @@ const apis = [
     postCustomerRegister,
     getCustomerById,
     putCustomerRegister,
-    deleteCustomer
+    deleteCustomer,
+    postCashIn
 ]
 
 for(const api of apis) {

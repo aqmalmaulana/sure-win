@@ -1,8 +1,5 @@
-export interface ICustomerXenditDto {
-    _id?: string;
-    cifId?: string;
-    accountNo?: string;
-    type?: string;
-    createdAt?: Date;
-    updatedAt?: Date;
+export class CustomerXenditDto {
+    public id: string;
+    public accountNo: string;
+    public type: string;
 }

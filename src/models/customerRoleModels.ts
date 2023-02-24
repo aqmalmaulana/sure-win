@@ -1,11 +1,9 @@
-import { model, Schema } from 'mongoose';
-import bcrypt from 'bcrypt';
+import { Document, model, Schema } from 'mongoose';
 
 export interface ICustomerRole extends Document {
-    _id?: string;
-    name?: string;
-    rules?: string;
-    deleteFlag?: boolean;
+    name: string;
+    rules: string;
+    deleteFlag: boolean;
 }
 
 const customerRoleSchema = new Schema<ICustomerRole>({
@@ -27,8 +25,12 @@ const customerRoleSchema = new Schema<ICustomerRole>({
         default: false
     }
 },{
-    timestamps: true,
-    versionKey: false
+    versionKey: false,
+    virtuals: true
+})
+
+customerRoleSchema.virtual('id').get(function() {
+    return this._id
 })
 
 export default model<ICustomerRole>('role', customerRoleSchema)

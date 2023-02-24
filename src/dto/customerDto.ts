@@ -1,11 +1,11 @@
-export interface ICustomerDto {
-    _id: string;
-    name?: string;
-    mobileNo?: number;
-    password?: string;
-    createdAt?: Date;
-    updatedAt?: Date;
-    deleteFlag?: boolean;
-    roleId?: string;
-    accountNo?: string;
+export class CustomerDto {
+    public id: string;
+    public name: string;
+    public mobileNo: number;
+    public password: string;
+    public deleteFlag?: boolean;
+    public roleId?: string;
+    public accountNo: string;
+    public createdDate?: Date;
+    public updatedDate?: Date;
 }
