@@ -1,5 +1,5 @@
 import { Model } from "mongoose";
-import { IOrderDto } from "../../dto/orderDto";
+import { OrderDto } from "../../dto/orderDto";
 import orderModels, { IOrder } from "../../models/orderModels";
 
 export class OrderSerivce {
@@ -9,7 +9,7 @@ export class OrderSerivce {
         this.order = orderModels
     }
 
-    async create(data: IOrderDto): Promise<IOrder> {
+    async create(data: OrderDto): Promise<IOrder> {
         const clone = JSON.parse(JSON.stringify(data))
         clone._id= clone.id
         delete clone.id

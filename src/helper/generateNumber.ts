@@ -25,7 +25,7 @@ export class UniqueGenerator {
     }
 
     const dates = UniqueGenerator.generateDate();
-    const result = `XDT-${dates.year.slice(-2).padStart(2, "0")}${dates.month}${dates.day}${lastNum.toString().padStart(6, "0")}`;
+    const result = `TST-${dates.year.slice(-2).padStart(2, "0")}${dates.month}${dates.day}${lastNum.toString().padStart(6, "0")}`;
 
     return result;
   }
@@ -33,7 +33,6 @@ export class UniqueGenerator {
   static async invoice(data: CustomerDto): Promise<any> {
     const orderService = new OrderSerivce();
     const latestOrder = await orderService.findLatestTrxRefNoByAccountNo(data.accountNo)
-    console.log(latestOrder)
     let lastNum = 1;
     if (latestOrder) {
       const getNum = latestOrder.trxRefNo.split("/");

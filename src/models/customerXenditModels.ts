@@ -1,6 +1,7 @@
 import { Document, model, Schema } from 'mongoose';
 
 export interface ICustomerXendit extends Document {
+    id: string;
     accountNo: string;
     type: string;
 }
@@ -19,12 +20,21 @@ const customerXenditSchema = new Schema<ICustomerXendit>({
         required: true
     }
 },{
-    versionKey: false,
-    virtuals: true
-})
-
-customerXenditSchema.virtual('id').get(function() {
-    return this._id
+    toJSON: {
+      virtuals: true,
+      transform: function(doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+      },
+    },
+    toObject: {
+      virtuals: true,
+      transform: function(doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+      },
+    },
+    versionKey: false
 })
 
 export default model<ICustomerXendit>('customerXendit', customerXenditSchema)

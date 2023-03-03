@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { ErrorStatus, RoleID } from "../enum";
+import {  ErrorType, RoleID } from "../enum";
+import { BusinessError } from "../helper/handleError";
 import { ExternalJWTService } from "../services/external/externalJWTService";
 
 export const authAdmin = (req: Request, res: Response, next: NextFunction) => {
@@ -10,19 +11,13 @@ export const authAdmin = (req: Request, res: Response, next: NextFunction) => {
             const externalJWTService = new ExternalJWTService()
             const check: any = externalJWTService.verifyAccessToken(token)
             if(check?.roleId !== RoleID.Admin) {
-                return res.sendStatus(401)
+                throw new BusinessError("Invalid Authentication Token", ErrorType.Authentication);
             }
         } catch (error) {
-            return res.status(401).send({
-                error: ErrorStatus.JWTInvalidToken,
-                message: "Invalid token"
-            })
+            throw new BusinessError("Invalid Authentication Token " + error.message, ErrorType.Authentication);
         }
     } else {
-        return res.status(401).send({
-            error: ErrorStatus.JWTTokenNotFound,
-            message: "Invalid token"
-        })
+        throw new BusinessError("Invalid Authentication Token", ErrorType.Authentication);
     }
     next()
 }

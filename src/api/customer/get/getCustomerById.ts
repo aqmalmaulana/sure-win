@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { ErrorStatus } from '../../../enum';
+import {  ErrorType } from '../../../enum';
+import { BusinessError } from '../../../helper/handleError';
 import { Validation, Validator } from '../../../helper/validator';
 import { apiRouter } from '../../../interfaces';
-import { ExternalXenditService } from '../../../services/external/externalXenditSevice';
 import { CustomerService } from '../../../services/internal/customerService';
 import { CustomerXenditService } from '../../../services/internal/customerXenditService';
 
@@ -20,18 +20,16 @@ const paramsValidation: Validation[] = [
 
 const main = async(req: Request, res: Response) => {
     const validate = new Validator(req, res)
-    const query: {
+    const params: {
         id: string;
     } = validate.process(paramsValidation, "params")
-
+    console.log(params)
+    
     const customerService = new CustomerService()
-    let customer = await customerService.findById(query.id)
+    let customer = await customerService.findById(params.id)
+    
     if(!customer) {
-        res.status(401).send({
-            error: ErrorStatus.CustomerNotFound,
-            message: "Invalid user"
-        })
-        return
+        throw new BusinessError("Invalid User", ErrorType.NotFound);
     }
 
     const xenditService = new CustomerXenditService()

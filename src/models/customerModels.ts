@@ -5,6 +5,7 @@ export interface ICustomer extends Document {
     id: string;
     name: string;
     mobileNo: number;
+    email: string;
     password: string;
     createdDate: Date;
     updatedDate: Date;
@@ -26,9 +27,15 @@ const customerSchema = new Schema<ICustomer>({
         required: true,
         unique: true
     },
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
     password: {
         type: String,
-        required: true
+        required: true,
+        select: false
     },
     deleteFlag: {
         type: Boolean,
@@ -48,8 +55,21 @@ const customerSchema = new Schema<ICustomer>({
         type: Date
     }
 },{
-    versionKey: false,
-    virtuals: true
+    toJSON: {
+      virtuals: true,
+      transform: function(doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+      },
+    },
+    toObject: {
+      virtuals: true,
+      transform: function(doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+      },
+    },
+    versionKey: false
 })
 
 customerSchema.pre('save', async function () {
@@ -57,9 +77,5 @@ customerSchema.pre('save', async function () {
       this.password = await bcrypt.hash(this.password, 10);
     }
 });
-
-customerSchema.virtual('id').get(function() {
-    return this._id
-})
 
 export default model<ICustomer>('customer', customerSchema)

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { CustomerDto } from '../../../dto/customerDto';
-import { ErrorStatus } from '../../../enum';
+import {  ErrorType } from '../../../enum';
+import { BusinessError } from '../../../helper/handleError';
 import { Validation, Validator } from '../../../helper/validator';
 import { apiRouter } from '../../../interfaces';
 import { ExternalJWTService } from '../../../services/external/externalJWTService';
@@ -11,9 +12,9 @@ const method = "POST"
 const auth = false
 const bodyValidation: Validation[]= [
     {
-        name: "mobileNo",
-        type: "number",
-        isMobileNo: true,
+        name: "email",
+        type: "string",
+        isEmail: true,
         required: true
     },
     {
@@ -24,7 +25,7 @@ const bodyValidation: Validation[]= [
 ]
 const main = async(req: Request, res: Response) => {
     const requestBody: {
-        mobileNo: number;
+        email: string;
         password: string;
     } = new Validator(req, res).process(bodyValidation, "body")
     if(!requestBody) {
@@ -33,13 +34,9 @@ const main = async(req: Request, res: Response) => {
     const customerService = new CustomerService()
     const externalJWTService = new ExternalJWTService()
     
-    const existCustomer: CustomerDto = await customerService.findByMobileNoAndPassword(requestBody.mobileNo, requestBody.password)
+    const existCustomer: CustomerDto = await customerService.findByEmailAndPassword(requestBody.email, requestBody.password)
     if(!existCustomer) {
-        res.status(401).send({
-            error: ErrorStatus.CustomerAlreadyExisst,
-            message: "Mobile number or password invalid"
-        })
-        return
+        throw new BusinessError("Invalid User", ErrorType.NotFound);
     }
     const accessToken = externalJWTService.createAccessToken({id: existCustomer.id, roleId: existCustomer.roleId})
     const refreshToken = externalJWTService.createRefreshToken({id: existCustomer.id, roleId: existCustomer.roleId})

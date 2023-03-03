@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
-import { ErrorStatus } from '../../../enum';
+import {  ErrorType } from '../../../enum';
 import { Validation, Validator } from '../../../helper/validator';
 import { CustomerService } from '../../../services/internal/customerService';
 import { v4 as uuid } from 'uuid';
 import { ExternalXenditService } from '../../../services/external/externalXenditSevice';
 import { apiRouter } from '../../../interfaces';
+import { BusinessError } from '../../../helper/handleError';
 
 const path = "/v1/customer/"
 const method = "PUT"
@@ -22,6 +23,11 @@ const bodyValidation: Validation[]= [
         required: true
     },
     {
+        name: "email",
+        type: "string",
+        required: true
+    },
+    {
         name: "name",
         type: "string",
         required: true
@@ -31,6 +37,7 @@ const main = async(req: Request, res: Response) => {
     const requestBody: {
         id: string;
         mobileNo: number;
+        email: string;
         name: string;
     } = new Validator(req, res).process(bodyValidation, "body")
     if(!requestBody) {
@@ -41,16 +48,13 @@ const main = async(req: Request, res: Response) => {
 
     const existCustomer = await customerService.findById(requestBody.id)
     if(!existCustomer) {
-        res.status(401).send({
-            error: ErrorStatus.CustomerNotFound,
-            message: "Invalid User"
-        })
-        return
+        throw new BusinessError("Invalid User", ErrorType.NotFound);
     }
 
     const updateCustomer = await customerService.update({
         id: existCustomer.id,
         name: requestBody.name,
+        email: requestBody.email,
         mobileNo: requestBody.mobileNo,
         password: existCustomer.password,
         accountNo: existCustomer.accountNo,
@@ -64,19 +68,7 @@ const main = async(req: Request, res: Response) => {
         description: `This customer has updated`
     })
 
-    const duplicate = JSON.parse(JSON.stringify(updateCustomer))
-    for(const key in duplicate) {
-        if(key === "password" || key === "delete_flag") {
-            delete duplicate[key]
-        }
-        if(key === "id") {
-            duplicate["id"] = duplicate[key]
-
-            delete duplicate[key]
-        }
-    }
-
-    return res.status(200).send(duplicate)
+    return res.status(200).send(updateCustomer)
 }
 
 const putCustomerRegister: apiRouter = {

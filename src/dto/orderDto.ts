@@ -1,12 +1,12 @@
-export interface IOrderDto {
+export class OrderDto {
     id: string;
     trxRefNo: string;
     accountNo: string;
+    productId: string;
     amount: number;
     fee?: number;
     status?: string;
     type: "Buy" | "Sell" | "Win" | "Loss" | "Bonus";
-    invoiceUrl?: string;
     currency?: "IDR";
     updatedDate?: Date;
     submittedDate?: Date;

@@ -1,4 +1,5 @@
 import { Config } from "../../config";
+import { CreateCustomerXenditExternal, CreateInvoiceExternal, UpdateCustomerXenditExternal } from "../../dto/externalXenditDto";
 
 export class ExternalXenditService {
     private apiKey: string;
@@ -9,7 +10,7 @@ export class ExternalXenditService {
         this.baseUrl = config.xenditApiUrl
     }
 
-    public async postCustomer(data: {accountNo: string; name: string; mobileNumber: number; description?: string}): Promise<any> {
+    public async postCustomer(data: CreateCustomerXenditExternal): Promise<any> {
         console.log(`POST NEW CUSTOMER XENDIT`)
         console.log(data)
         return await this.request("POST", "customers", {
@@ -23,7 +24,7 @@ export class ExternalXenditService {
         })
     }
 
-    public async updateCustomer(data: {xenditId: string; name: string; mobileNumber: number; description?: string}): Promise<any> {
+    public async updateCustomer(data: UpdateCustomerXenditExternal): Promise<any> {
         return await this.request("PATCH", `customers/${data.xenditId}`, {
             type: "INDIVIDUAL",
             individual_detail: {
@@ -34,18 +35,8 @@ export class ExternalXenditService {
         })
     }
 
-    public async createInvoice(data: {trxRefNo: string; amount: number, accountNo: string}): Promise<any> {
-        return await this.request("POST", "v2/invoices", {
-            external_id: data.trxRefNo,
-            amount: data.amount,
-            description: "New Deposit for account " + data.accountNo,
-            payment_methods: ["BCA", "BNI", "BRI", "QRIS", "OVO", "DANA", "SHOPEEPAY"],
-            items: [{
-                name: "Topup",
-                quantity: 1,
-                price: data.amount
-            }]
-        })
+    public async createInvoice(data: CreateInvoiceExternal): Promise<any> {
+        return await this.request("POST", "v2/invoices", data)
     }
 
     private async request(method: "POST" | "GET" | "PATCH" | "DELETE", path: string, data?: any): Promise<any> {
@@ -72,30 +63,4 @@ export class ExternalXenditService {
             throw new Error(message);
         }
     }
-}
-
-interface IAddress {
-    country: string;
-    streetLine1?: string;
-    streetLine2?: string;
-    city?: string;
-    province?: string;
-    state?: string;
-    postalCode?: string;
-}
-
-interface ICreateCustomer {
-    referenceID: string;
-    mobileNumber?: string;
-    email?: string;
-    givenNames: string;
-    middleName?: string;
-    surname?: string;
-    description?: string;
-    phoneNumber?: string;
-    nationality?: string;
-    addresses?: IAddress[];
-    dateOfBirth?: string;
-    metadata?: object;
-    apiVersion?: string;
 }

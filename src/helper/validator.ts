@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import validator from "validator"
-import { ErrorStatus } from "../enum";
+import {  ErrorType } from "../enum";
+import { BusinessError } from "./handleError";
 
 export interface Validation {
     name?: string;
@@ -9,6 +10,10 @@ export interface Validation {
     maxLength?: number;
     type?: "string" | "number" | "boolean" | "array" | "object";
     isMobileNo?: boolean;
+    isEmail?: boolean;
+    default?: any;
+    minNumber?: number;
+    maxNumber?: number;
 }
 
 export class Validator {
@@ -22,11 +27,7 @@ export class Validator {
     public process(schema: Validation[], type: "query" | "body" | "params"): any {
         const result = this.checking(schema, type)
         if(!result.success) {
-            this.response.status(401).send({
-                error: ErrorStatus.InvalidQuery,
-                message: result.message
-            })
-            return;
+            throw new BusinessError(result.message, ErrorType.Validation);
         } else {
             return {
                 ...this.request[type]
@@ -55,6 +56,9 @@ export class Validator {
                 result.message = `Field ${schema.name} is required`
                 return result
             } else if(!schema.required && !value) {
+                if (schema.default) {
+                    req[schema.name] = schema.default
+                }
                 continue;
             } else {
                 switch (schema.type) {
@@ -63,6 +67,12 @@ export class Validator {
                         if(typeof value !== "string") {
                             result.message = `Field ${schema.name} must be a string`
                             return result
+                        }else if(schema.isEmail){
+                            const email = validator.isEmail(value)
+                            if(!email) {
+                                result.message = `Field ${schema.name} must be a valid email`
+                                return result
+                            }
                         } else if (schema.minLength && value.length < schema.minLength) {
                             result.message = `Field ${schema.name} must be at least ${schema.minLength} characters`
                             return result
@@ -88,6 +98,16 @@ export class Validator {
                                 result.message = `Mobile number not valid ${value}`
                                 return result
                             }
+                        }
+
+                        if(typeof schema.minNumber !== "undefined" && value < schema.minNumber) {
+                            result.message = `Field ${schema.name} must be with minimum ${schema.minNumber}`
+                            return result
+                        }
+                        
+                        if(typeof schema.minNumber !== "undefined" && value > schema.maxNumber) {
+                            result.message = `Field ${schema.name} must be with maximum ${schema.maxNumber}`
+                            return result
                         }
                         break;
                     

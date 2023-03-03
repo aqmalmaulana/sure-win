@@ -1,6 +1,7 @@
 import { Document, model, Schema } from 'mongoose';
 
 export interface ICustomerRole extends Document {
+    id: string;
     name: string;
     rules: string;
     deleteFlag: boolean;
@@ -25,12 +26,21 @@ const customerRoleSchema = new Schema<ICustomerRole>({
         default: false
     }
 },{
-    versionKey: false,
-    virtuals: true
-})
-
-customerRoleSchema.virtual('id').get(function() {
-    return this._id
+    toJSON: {
+      virtuals: true,
+      transform: function(doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+      },
+    },
+    toObject: {
+      virtuals: true,
+      transform: function(doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+      },
+    },
+    versionKey: false
 })
 
 export default model<ICustomerRole>('role', customerRoleSchema)

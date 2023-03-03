@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
-import { ErrorStatus } from '../../../enum';
+import {  ErrorType } from '../../../enum';
 import { Validation, Validator } from '../../../helper/validator';
 import { apiRouter } from '../../../interfaces';
 import { CustomerService } from '../../../services/internal/customerService';
 import { v4 as uuid } from 'uuid';
+import { BusinessError } from '../../../helper/handleError';
 
 const path = "/v1/customer/:id"
 const method = "DELETE"
@@ -26,29 +27,12 @@ const main = async(req: Request, res: Response) => {
 
     const existCustomer = await customerService.findById(params.id)
     if(!existCustomer) {
-        res.status(401).send({
-            error: ErrorStatus.CustomerNotFound,
-            message: "Invalid User"
-        })
-        return
+        throw new BusinessError("Invalid User", ErrorType.NotFound);
     }
 
     const updateCustomer = await customerService.delete(params.id)
 
-    const duplicate = JSON.parse(JSON.stringify(existCustomer))
-    for(const key in duplicate) {
-        if(key === "password" || key === "delete_flag") {
-            delete duplicate[key]
-        }
-        if(key === "_id") {
-            duplicate["id"] = duplicate[key]
-
-            delete duplicate[key]
-        }
-    }
-
-
-    return res.status(200).send(duplicate)
+    return res.status(200).send(updateCustomer)
 }
 
 const deleteCustomer: apiRouter = {
