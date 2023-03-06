@@ -18,6 +18,9 @@ const main = async(req: Request, res: Response) => {
 
     const productService = new ProductService()
     const products: ProductDto[] = await productService.findAll()
+    if(products.length === 0) {
+        return res.send(products)
+    }
 
     const priceAfterDiscount = JSON.parse(JSON.stringify(products))
     for(const product of priceAfterDiscount) {

@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 
 const path = "/v1/product"
 const method = "PUT"
-const authAdmin = false
+const authAdmin = true
 const bodyValidation: Validation[]= [
     {
         name: "id",
