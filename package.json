@@ -2,7 +2,7 @@
   "name": "sure_win",
   "version": "1.0.0",
   "description": "This package for website guessing game",
-  "main": "dist/src/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
     "start": "node .",

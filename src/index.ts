@@ -1,14 +1,15 @@
-import express, { Express } from 'express';
 import dotenv from 'dotenv';
+if(process.env.NODE_ENV === "PRODUCTION") {
+    dotenv.config({path: "/root/myapp/.env"})
+} else {
+    dotenv.config()
+}
+
+import express, { Express } from 'express';
 import getApp from './app';
 
 (async()=> {
-    if(process.env.NODE_ENV === "PRODUCTION") {
-        dotenv.config({path: "/root/myapp/.env"})
-    } else {
-        dotenv.config()
-    }
-
+    
     try {
         const app: Express = express();
         const port = process.env.PORT || 3000;
