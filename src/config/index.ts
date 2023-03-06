@@ -1,4 +1,5 @@
 export class Config {
+    public nodeEnv = process.env.NODE_ENV || "DEVELOPMENT"
     public port = process.env.PORT || 3000
     public jwtAccessToken = process.env.JWT_ACCESS_TOKEN
     public jwtRefreshToken = process.env.JWT_REFRESH_TOKEN

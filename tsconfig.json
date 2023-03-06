@@ -12,6 +12,6 @@
     "allowJs": true,
     "esModuleInterop": true,
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "package.json", "package-lock.json"],
   "exclude": ["./dist"]
 }
