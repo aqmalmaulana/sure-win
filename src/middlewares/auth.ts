@@ -10,7 +10,7 @@ export const authorization = (req: Request, res: Response, next: NextFunction) =
         try {
             const externalJWTService = new ExternalJWTService()
             const check: any = externalJWTService.verifyAccessToken(token)
-            if(check?.roleId !== RoleID.User && check?.roleId !== RoleID.Admin) {
+            if(check?.rid !== RoleID.User && check?.rid !== RoleID.Admin) {
                 throw new BusinessError("Invalid Authentication Token", ErrorType.Authentication);
             }
         } catch (error) {

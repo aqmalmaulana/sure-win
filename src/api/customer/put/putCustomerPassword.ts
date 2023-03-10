@@ -4,8 +4,9 @@ import { Validation, Validator } from '../../../helper/validator';
 import { CustomerService } from '../../../services/internal/customerService';
 import { apiRouter } from '../../../interfaces';
 import { BusinessError } from '../../../helper/handleError';
+import bcrypt from 'bcrypt';
 
-const path = "/v1/customer"
+const path = "/v1/customer-password"
 const method = "PUT"
 const auth = true
 const bodyValidation: Validation[]= [
@@ -15,55 +16,53 @@ const bodyValidation: Validation[]= [
         required: true
     },
     {
-        name: "username",
+        name: "oldPassword",
         type: "string",
         required: true
     },
     {
-        name: "email",
-        type: "string",
-        isEmail: true,
-        required: true
-    },
-    {
-        name: "address",
+        name: "newPassword",
         type: "string",
         required: true
-    },
+    }
 ]
 const main = async(req: Request, res: Response) => {
     const requestBody: {
         id: string;
-        username: string;
-        email: string;
-        address: string;
+        oldPassword: string;
+        newPassword: string;
     } = new Validator(req, res).process(bodyValidation, "body")
     if(!requestBody) {
         return;
     }
-    const customerService = new CustomerService()
+    if(requestBody.oldPassword === requestBody.newPassword) {
+        throw new BusinessError("Old and new passwords cannot be the same", ErrorType.Authentication)
+    }
 
-    const existCustomer = await customerService.findById(requestBody.id)
+    const customerService = new CustomerService()
+    const existCustomer = await customerService.findById(requestBody.id, true)
+    console.log(existCustomer)
     if(!existCustomer) {
         throw new BusinessError("Invalid User", ErrorType.NotFound);
     }
 
-    const updateCustomer = await customerService.update({
-        id: existCustomer.id,
-        email: requestBody.email,
-        username: requestBody.username,
-        address: requestBody.address,
-        updatedAt: new Date(),
-    })
+    console.log(requestBody.oldPassword)
+    console.log(existCustomer.password)
 
+    const syncPassword = bcrypt.compareSync(requestBody.oldPassword, existCustomer.password)
+    if(!syncPassword) {
+        throw new BusinessError("Old password is invalid", ErrorType.Authentication)
+    }
+
+    const updateCustomer = await customerService.updatePassword(existCustomer.id, requestBody.newPassword)
     return res.status(200).send(updateCustomer)
 }
 
-const putCustomer: apiRouter = {
+const putCustomerPassword: apiRouter = {
     path,
     method,
     main,
     auth
 }
 
-export default putCustomer
+export default putCustomerPassword

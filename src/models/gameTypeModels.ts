@@ -1,20 +1,29 @@
 import { Document, model, Schema } from 'mongoose';
 import { v4 as uuid } from 'uuid';
 
-export interface ICustomerRole extends Document {
+export interface IGameType extends Document {
     id: string;
     name: string;
+    loop: number;
+    cd: number;
 }
 
-const customerRoleSchema = new Schema<ICustomerRole>({
+const gameTypeSchema = new Schema<IGameType>({
     _id: {
         type: String
     },
     name: {
         type: String,
         required: true,
-        enum: ["amin", "user"]
     },
+    loop: {
+        type: Number,
+        required: true
+    },
+    cd: {
+        type: Number,
+        required: true
+    }
 },{
     toJSON: {
       virtuals: true,
@@ -33,4 +42,4 @@ const customerRoleSchema = new Schema<ICustomerRole>({
     versionKey: false
 })
 
-export default model<ICustomerRole>('role', customerRoleSchema)
+export default model<IGameType>('gameType', gameTypeSchema)

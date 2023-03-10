@@ -1,15 +1,21 @@
+import { InvoiceStatuses, OrderStatuses, OrderType } from "../enum";
+
 export class OrderDto {
-    id: string;
-    trxRefNo: string;
-    accountNo: string;
-    productId: string;
-    amount: number;
-    fee?: number;
-    status?: string;
-    type: "Buy" | "Sell" | "Win" | "Loss" | "Bonus";
-    currency?: "IDR";
-    updatedDate?: Date;
-    submittedDate?: Date;
-    processingDate?: Date;
-    completedDate?: Date;
+    public id?: string;
+    public cifId: string;
+    public trxRefNo?: string;
+    public description: string;
+    public priceAmount: string;
+    public priceCurrency: string;
+    public status: OrderStatuses | InvoiceStatuses;
+    public type: OrderType;
+    public productId?: string;
+    public gameId?: string;
+    public payAddress?: string;
+    public payAmount: string;
+    public payCurrency: string;
+    public purchaseId?: string;
+    public paymentId?: string;
+    public createdAt?: Date;
+    public updatedAt?: Date;
 }

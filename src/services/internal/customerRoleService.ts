@@ -1,6 +1,7 @@
 import { Model } from "mongoose";
 import customerModels, { ICustomerRole } from "../../models/customerRoleModels";
 import { CustomerRoleDto } from "../../dto/customerRoleDto";
+import { v4 as uuid } from 'uuid';
 
 export class CustomerRoleService{
     private role: Model<ICustomerRole>;
@@ -11,8 +12,7 @@ export class CustomerRoleService{
 
     async create(data: CustomerRoleDto): Promise<ICustomerRole> {
         const clone = JSON.parse(JSON.stringify(data))
-        clone._id= clone.id
-        delete clone.id
+        clone._id = uuid()
 
         return await this.role.create(clone)
     }

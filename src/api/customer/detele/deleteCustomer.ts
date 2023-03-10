@@ -3,7 +3,6 @@ import {  ErrorType } from '../../../enum';
 import { Validation, Validator } from '../../../helper/validator';
 import { apiRouter } from '../../../interfaces';
 import { CustomerService } from '../../../services/internal/customerService';
-import { v4 as uuid } from 'uuid';
 import { BusinessError } from '../../../helper/handleError';
 
 const path = "/v1/customer/:id"
@@ -30,9 +29,9 @@ const main = async(req: Request, res: Response) => {
         throw new BusinessError("Invalid User", ErrorType.NotFound);
     }
 
-    const updateCustomer = await customerService.delete(params.id)
+    const deleteCustomer = await customerService.delete(params.id)
 
-    return res.status(200).send(updateCustomer)
+    return res.status(200).send(deleteCustomer)
 }
 
 const deleteCustomer: apiRouter = {

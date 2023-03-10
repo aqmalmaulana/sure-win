@@ -1,24 +1,22 @@
 import { Document, model, Schema } from 'mongoose';
+import { v4 as uuid } from 'uuid';
 
-export interface ICustomerXendit extends Document {
+export interface IFunds extends Document {
     id: string;
-    accountNo: string;
-    type: string;
+    cifId: string;
+    currency: string;
+    balance: string;
+    updatedAt: Date;
 }
 
-const customerXenditSchema = new Schema<ICustomerXendit>({
+const fundSchema = new Schema<IFunds>({
     _id: {
         type: String
     },
-    accountNo:{
-        type: String,
-        required: true,
-        unique: true
-    },
-    type: {
-        type: String,
-        required: true
-    }
+    cifId: { type: String, required: true },
+    currency: String,
+    balance: String,
+    updatedAt: Date
 },{
     toJSON: {
       virtuals: true,
@@ -37,4 +35,4 @@ const customerXenditSchema = new Schema<ICustomerXendit>({
     versionKey: false
 })
 
-export default model<ICustomerXendit>('customerXendit', customerXenditSchema)
+export default model<IFunds>('fund', fundSchema)

@@ -2,6 +2,7 @@ import { Model } from "mongoose";
 import customerModels, { ICustomer } from "../../models/customerModels";
 import bcrypt from "bcrypt"
 import { CustomerDto } from "../../dto/customerDto";
+import { v4 as uuid } from 'uuid';
 
 export class CustomerService{
     private customer: Model<ICustomer>;
@@ -12,8 +13,7 @@ export class CustomerService{
 
     async create(data: CustomerDto): Promise<ICustomer> {
         const clone = JSON.parse(JSON.stringify(data))
-        clone._id = clone.id
-        delete clone.id
+        clone._id = uuid()
 
         return await this.customer.create(clone)
     }
@@ -26,6 +26,15 @@ export class CustomerService{
         { new: true })
     }
 
+    async updatePassword(id: string, password: string): Promise<ICustomer> {
+        return await this.customer.findOneAndUpdate({
+            _id: id,
+            deleteFlag: false
+        }, 
+        {password},
+        { new: true })
+    }
+
     async delete(id: string): Promise<ICustomer>{
         return await this.customer.findByIdAndUpdate(id,
         {
@@ -35,18 +44,11 @@ export class CustomerService{
         { new: true })
     }
 
-    async findById(id: string): Promise<ICustomer> {
+    async findById(id: string, withPassword: boolean = false): Promise<ICustomer> {
         return await this.customer.findOne({
             _id: id,
             deleteFlag: false 
-        })
-    }
-
-    async findByMobileNo(mobileNo: number): Promise<ICustomer> {
-        return await this.customer.findOne({
-            mobileNo,
-            deleteFlag: false
-        })
+        }).select(`${withPassword ? "+" : "-"}password`)
     }
 
     async findByEmail(email: string): Promise<ICustomer> {
@@ -56,10 +58,22 @@ export class CustomerService{
         })
     }
 
-    async findByEmailAndPassword(email: string, pass: string): Promise<ICustomer | any> {
-        const customer = await this.customer.findOne({
+    async findByEmailAndUsername(email: string, username: string): Promise<ICustomer>{
+        return await this.customer.findOne({
             email,
-            deleteFlag: false
+            username
+        })
+    }
+
+    async findByEmailOrUsernameAndPassword(email: string, pass: string): Promise<ICustomer | any> {
+        const customer = await this.customer.findOne({
+            $and: [
+                {$or: [
+                    {email},
+                    {username: email}
+                ]},
+                { deleteFlag: false }
+            ]
         }).select("+password")
         if(!customer) {
             return customer
@@ -75,7 +89,7 @@ export class CustomerService{
         return withoutPassword
     }
 
-    async getLastIdCustomer(): Promise<ICustomer> {
-        return await this.customer.findOne({}).sort({accountNo: -1})
+    async countUser(): Promise<any> {
+        return await this.customer.countDocuments()
     }
 }

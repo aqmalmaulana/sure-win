@@ -4,7 +4,6 @@ import { BusinessError } from '../../../helper/handleError';
 import { Validation, Validator } from '../../../helper/validator';
 import { apiRouter } from '../../../interfaces';
 import { CustomerService } from '../../../services/internal/customerService';
-import { CustomerXenditService } from '../../../services/internal/customerXenditService';
 
 const path = "/v1/customer/:id"
 const method = "GET"
@@ -32,18 +31,7 @@ const main = async(req: Request, res: Response) => {
         throw new BusinessError("Invalid User", ErrorType.NotFound);
     }
 
-    const xenditService = new CustomerXenditService()
-    const account = await xenditService.findByAccountNo(customer.accountNo)
-
-    const duplicate = JSON.parse(JSON.stringify(customer))
-    for(const key in duplicate) {
-        if(key === "password" || key === "delete_flag") {
-            delete duplicate[key]
-        }
-    }
-    duplicate.account = account
-
-    return res.status(200).send(duplicate)
+    return res.status(200).send(customer)
 }
 
 const getCustomerById: apiRouter = {

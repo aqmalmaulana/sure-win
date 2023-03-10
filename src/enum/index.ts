@@ -22,18 +22,31 @@ export enum RoleID {
 }
 
 export enum OrderStatuses {
-    PENDING = "1",
+    WAITING = "1",
     PROCESSING = "2",
-    COMPLETED = "3",
-    REJECTED = "4",
-    FAILED = "5"
+    FINISHED = "3",
+    FAILED = "4",
+    REJECTED = "5",
+    SENDING = "6"
 }
 
+export enum OrderType {
+    BUY = "Buy",
+    SELL = "Sell",
+    WIN = "Win",
+    LOSS = "Loss",
+    PLAY = "Play",
+    BONUS = "Bonus"
+}
+// "Buy" | "Sell" | "Win" | "Loss" | "Play" | "Bonus"
 export enum InvoiceStatuses {
-    PENDING = "1",
-    PROCESSING = "2",
-    COMPLETED = "3",
-    REJECTED = "4",
-    FAILED = "5",
-    PAID = "6"
+    WAITING = "1",
+    CONFIRMING = "2",
+    CONFIRMED = "3",
+    SENDING = "4",
+    PARTIALLY_PAID = "5",
+    FINISHED = "6",
+    FAILED = "7",
+    REFUNDED = "8",
+    EXPIRED = "9"
 }

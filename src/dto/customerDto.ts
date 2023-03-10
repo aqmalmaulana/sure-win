@@ -1,12 +1,12 @@
 export class CustomerDto {
-    public id: string;
-    public name: string;
-    public mobileNo: number;
+    public id?: string;
+    public username: string;
     public email: string;
-    public password: string;
+    public accountNo?: string;
+    public password?: string;
+    public address: string;
+    public createdAt?: Date;
+    public updatedAt?: Date;
     public deleteFlag?: boolean;
     public roleId?: string;
-    public accountNo: string;
-    public createdDate?: Date;
-    public updatedDate?: Date;
 }

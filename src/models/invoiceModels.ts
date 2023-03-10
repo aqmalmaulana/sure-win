@@ -1,57 +1,45 @@
 import { Document, model, Schema } from "mongoose";
-
+import { v4 as uuid } from 'uuid';
 export interface IInvoice extends Document {
-    id: string;
-    trxRefNo: string;
-    xenditRefNo: string;
-    status: string;
-    merchantName: string;
-    amount: number;
-    createdDate: Date;
-    updatedDate: Date;
-    payerEmail: string;
-    description: string;
-    paymentId: string;
-    paidAmount: number;
-    paymentMethod: string;
-    ewalletType: string;
-    currency: string;
-    paidAt: Date;
-    paymentChannel: string;
-    paymentMethodId: string;
-    invoiceUrl: string;
-    items: Array<{
-        name: string;
-        price: number;
-        quantity: number;
-    }>
+  id: string;
+  extInvoiceId: string;
+  trxRefNo: string;
+  status: string;
+  description: string;
+  priceAmount: string;
+  priceCurrency: string;
+  payCurrency: string;
+  invoiceUrl: string;
+  callbackUrl: string;
+  successUrl: string;
+  cancelUrl: string;
+  partiallyPaidUrl: string;
+  createdAt: Date;
+  updatedAt: Date;
+  isFixedRate: boolean;
+  isFeePaidByUser: boolean;
 }
 
 const invoiceSchema = new Schema<IInvoice>({
-    _id: String,
-    status: { type: String, required: true },
+    _id: {
+      type: String
+    },
+    extInvoiceId: { type: String, required: true, unique: true },
     trxRefNo: { type: String, unique: true, required: true },
-    xenditRefNo: { type: String, unique: true, required: true },
-    merchantName: String,
-    amount: { type: Number, required: true },
-    createdDate: Date,
-    updatedDate: Date,
-    payerEmail: String,
-    description: String,
-    paymentId: String,
-    paidAmount: Number,
-    paymentMethod: String,
-    ewalletType: String,
-    currency: String,
-    paidAt: Date,
-    paymentChannel: String,
-    paymentMethodId: String,
+    status: { type: String, required: true },
+    description: { type: String, required: true },
+    priceAmount: { type: String, required: true },
+    priceCurrency: { type: String, required: true },
+    payCurrency: { type: String },
     invoiceUrl: { type: String, required: true },
-    items: [{
-        name: { type: String, required: true },
-        price: { type: Number, required: true },
-        quantity: { type: Number, required: true },
-    }]
+    callbackUrl: { type: String, required: true },
+    successUrl: String,
+    cancelUrl: String,
+    partiallyPaidUrl: String,
+    createdAt: Date,
+    updatedAt: Date,
+    isFixedRate: { type: Boolean, required: true },
+    isFeePaidByUser: { type: Boolean, required: true },
 },{
     toJSON: {
       virtuals: true,

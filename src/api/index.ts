@@ -5,14 +5,9 @@ import deleteCustomer from './customer/detele/deleteCustomer';
 import getCustomerById from './customer/get/getCustomerById';
 import postCustomerLogin from './customer/post/postCustomerLogin';
 import postCustomerRegister from './customer/post/postCustomerRegistration';
-import putCustomerRegister from './customer/put/putCustomer';
-import postCashIn from './order/post/postOrder';
-import deleteAdminProduct from './product/delete/deleteAdminProduct';
-import getProductById from './product/get/getProductById';
-import getProducts from './product/get/getProducts';
-import getProductBycategory from './product/get/getProductsByCategory';
-import postAdminProduct from './product/post/postAdminProduct';
-import putAdminProductById from './product/put/putAdminProductById';
+import putCustomer from './customer/put/putCustomer';
+import putCustomerPassword from './customer/put/putCustomerPassword';
+import postCashIn from './order/post/postCashIn';
 
 let router = Router()
 
@@ -21,19 +16,12 @@ const apis = [
     postCustomerLogin,
     postCustomerRegister,
     getCustomerById,
-    putCustomerRegister,
+    putCustomer,
+    putCustomerPassword,
     deleteCustomer,
 
     // Order
-    postCashIn,
-
-    // Product
-    postAdminProduct,
-    getProductById,
-    getProducts,
-    getProductBycategory,
-    deleteAdminProduct,
-    putAdminProductById
+    postCashIn
 ]
 
 for(const api of apis) {

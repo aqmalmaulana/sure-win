@@ -1,12 +1,10 @@
 export class ProductDto {
-    id: string;
-    name: string;
-    price: number;
-    discount?: number;
-    priceAfterDiscount?: number;
-    currency?: string;
-    description: string;
-    category: string;
-    isActive?: boolean;
-    deleteFlag?: boolean;
+    public id: string;
+    public name: string;
+    public gameTypeId: string;
+    public currency: string;
+    public description: string;
+    public category: string;
+    public isActive?: boolean;
+    public deleteFlag?: boolean;
 }

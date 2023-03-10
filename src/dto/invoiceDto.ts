@@ -1,26 +1,19 @@
 export class InvoiceDto {
-    id: string;
-    trxRefNo: string;
-    xenditRefNo: string;
-    status: string;
-    merchantName: string;
-    amount: number;
-    createdDate: Date;
-    updatedDate: Date;
-    payerEmail: string;
-    description: string;
-    paymentId?: string;
-    paidAmount?: number;
-    paymentMethod?: string;
-    ewalletType?: string;
-    currency: string;
-    paidAt?: Date;
-    paymentChannel?: string;
-    paymentMethodId?: string;
-    invoiceUrl: string;
-    items: Array<{
-        name: string;
-        price: number;
-        quantity: number;
-    }>
+    public id?: string;
+    public extInvoiceId: string;
+    public trxRefNo: string;
+    public status: string;
+    public description: string;
+    public priceAmount: string;
+    public priceCurrency: string;
+    public payCurrency: string;
+    public invoiceUrl: string;
+    public callbackUrl: string;
+    public successUrl?: string;
+    public cancelUrl?: string;
+    public partiallyPaidUrl?: string;
+    public createdAt?: Date;
+    public updatedAt?: Date;
+    public isFixedRate: boolean;
+    public isFeePaidByUser: boolean;
 }

@@ -1,59 +1,31 @@
 import { Document, model, Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
+import { v4 as uuid } from 'uuid';
 
 export interface ICustomer extends Document {
     id: string;
-    name: string;
-    mobileNo: number;
+    username: string;
     email: string;
+    accountNo: string;
     password: string;
-    createdDate: Date;
-    updatedDate: Date;
+    address: string;
+    createdAt: Date;
+    updatedAt: Date;
     deleteFlag: boolean;
     roleId: string;
-    accountNo: string;
 }
 
 const customerSchema = new Schema<ICustomer>({
-    _id: {
-        type: String,
-    },
-    name: {
-        type: String,
-        default: ""
-    },
-    mobileNo:{
-        type: Number,
-        required: true,
-        unique: true
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    password: {
-        type: String,
-        required: true,
-        select: false
-    },
-    deleteFlag: {
-        type: Boolean,
-        default: false
-    },
-    roleId: {
-        type: String,
-    },
-    accountNo: {
-        type: String,
-        unique: true
-    },
-    createdDate: {
-        type: Date,
-    },
-    updatedDate: {
-        type: Date
-    }
+    _id: { type: String },
+    username: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
+    accountNo: { type: String, required: true, unique: true },
+    address: { type: String, required: true, unique: true },
+    password: { type: String, required: true, select: false },
+    deleteFlag: { type: Boolean, default: false },
+    roleId: { type: String, required: true},
+    createdAt: Date,
+    updatedAt: Date
 },{
     toJSON: {
       virtuals: true,
@@ -76,6 +48,13 @@ customerSchema.pre('save', async function () {
     if (this.isModified('password')) {
       this.password = await bcrypt.hash(this.password, 10);
     }
+});
+
+customerSchema.pre('findOneAndUpdate', async function() {
+  const update: any = this.getUpdate();
+  if (update && update.password) {
+    update.password = await bcrypt.hash(update.password, 10);
+  }
 });
 
 export default model<ICustomer>('customer', customerSchema)

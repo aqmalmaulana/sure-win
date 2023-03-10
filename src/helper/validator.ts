@@ -4,16 +4,18 @@ import {  ErrorType } from "../enum";
 import { BusinessError } from "./handleError";
 
 export interface Validation {
-    name?: string;
+    name: string;
     required?: boolean;
     minLength?: number;
     maxLength?: number;
-    type?: "string" | "number" | "boolean" | "array" | "object";
+    type: "string" | "number" | "boolean" | "array" | "object";
     isMobileNo?: boolean;
     isEmail?: boolean;
     default?: any;
     minNumber?: number;
     maxNumber?: number;
+    items?: Validation;
+    properties?: Array<Validation>
 }
 
 export class Validator {
@@ -35,13 +37,13 @@ export class Validator {
         }
     }
 
-    protected checking(schemas: Validation[], type) {
+    protected checking(schemas: Validation[], type?: "query" | "body" | "params") {
         const req: any = this.request[type]
         const result: {
             success: boolean;
             message: string
         } = {success: false, message: ""}
-
+        
         for(const field in req) {
             if(!schemas.find(schema => schema.name === field)) {
                 result.message = `Field ${field} is not supported`
@@ -124,13 +126,14 @@ export class Validator {
                             return result
                         }
                         break;
-
+                        
                     case 'object':
                         if (typeof value !== 'object') {
                             result.message = `Field ${schema.name} should be an object`;
                             return result
                         }
                         break;
+
                     default:
                         break;
                 }

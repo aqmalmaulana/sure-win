@@ -1,10 +1,10 @@
 import { Document, model, Schema } from 'mongoose';
+import { v4 as uuid } from 'uuid';
 
 export interface IProduct extends Document {
     id: string;
     name: string;
-    price: number;
-    discount: number;
+    gameTypeId: string;
     currency: string;
     description: string;
     category: string;
@@ -13,14 +13,13 @@ export interface IProduct extends Document {
 }
 
 const productSchema = new Schema<IProduct>({
-    _id: String,
-    name: String,
-    price: Number,
-    discount: Number,
-    currency: {type: String, default: "IDR"},
-    description: String,
-    category: String,
-    isActive: Boolean,
+    _id: { type: String },
+    name: { type: String, required: true },
+    gameTypeId: { type: String, required: true },
+    currency: { type: String, required: true },
+    description: { type: String, required: true },
+    category: { type: String, required: true },
+    isActive: { type: Boolean, default: true },
     deleteFlag: {type: Boolean, default: false}
 },{
     toJSON: {
