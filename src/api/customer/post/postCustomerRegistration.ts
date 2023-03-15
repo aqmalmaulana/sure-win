@@ -9,10 +9,11 @@ import { FundService } from '../../../services/internal/fundsService';
 import { OrderSerivce } from '../../../services/internal/orderService';
 import { Config } from '../../../config';
 import { UniqueGenerator } from '../../../helper/uniqueGenerator';
+import { FundsDto } from '../../../dto/fundsDto';
 
 const path = "/v1/customer/registration"
 const method = "POST"
-const auth = false
+const auth = "guess"
 const bodyValidation: Validation[]= [
     {
         name: "username",
@@ -50,7 +51,7 @@ const main = async(req: Request, res: Response) => {
     const customerService = new CustomerService()
     const roleService = new CustomerRoleService()
     
-    const existCustomer = await customerService.findByEmailAndUsername(requestBody.email, requestBody.username)
+    const existCustomer = await customerService.findByEmailOrUsername(requestBody.email, requestBody.username)
     if(existCustomer) {
         throw new BusinessError("Username or email has registered", ErrorType.Duplicate);
     }
@@ -69,7 +70,7 @@ const main = async(req: Request, res: Response) => {
     })
 
     const fundService = new FundService
-    const newFund = {
+    const newFund: FundsDto = {
         cifId: newCustomer.id,
         currency: 'TRX',
         balance: '0',
@@ -80,7 +81,7 @@ const main = async(req: Request, res: Response) => {
         const trxRefNo = await UniqueGenerator.invoice(newCustomer, OrderType.BONUS)
         const config = new Config()
         const bonus = config.bonusNewRegistration.toString()
-        newFund.balance = bonus
+        newFund.bonus = bonus
 
         const orderService = new OrderSerivce()
         const newBonus = await orderService.create({
@@ -94,7 +95,8 @@ const main = async(req: Request, res: Response) => {
             payAmount: bonus,
             payCurrency: "TRX",
             createdAt: new Date(),
-            updatedAt: new Date()
+            updatedAt: new Date(),
+            amount: bonus
         })
     }
     const createFund = await fundService.create(newFund)

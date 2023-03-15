@@ -7,7 +7,7 @@ import { BusinessError } from '../../../helper/handleError';
 
 const path = "/v1/customer"
 const method = "PUT"
-const auth = true
+const auth = "user"
 const bodyValidation: Validation[]= [
     {
         name: "id",

@@ -6,6 +6,7 @@ export interface IFunds extends Document {
     cifId: string;
     currency: string;
     balance: string;
+    bonus: string;
     updatedAt: Date;
 }
 
@@ -16,6 +17,7 @@ const fundSchema = new Schema<IFunds>({
     cifId: { type: String, required: true },
     currency: String,
     balance: String,
+    bonus: String,
     updatedAt: Date
 },{
     toJSON: {

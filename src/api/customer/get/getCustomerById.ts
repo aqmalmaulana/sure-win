@@ -7,7 +7,7 @@ import { CustomerService } from '../../../services/internal/customerService';
 
 const path = "/v1/customer/:id"
 const method = "GET"
-const auth = true
+const auth = "user"
 
 const paramsValidation: Validation[] = [
     {

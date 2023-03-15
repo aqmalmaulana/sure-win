@@ -11,11 +11,14 @@ export class OrderDto {
     public type: OrderType;
     public productId?: string;
     public gameId?: string;
+    public amount: string;
     public payAddress?: string;
-    public payAmount: string;
-    public payCurrency: string;
+    public payAmount?: string;
+    public payCurrency?: string;
     public purchaseId?: string;
     public paymentId?: string;
     public createdAt?: Date;
     public updatedAt?: Date;
+    public remark?: string;
+    public hash?: string;
 }

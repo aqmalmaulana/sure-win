@@ -1,0 +1,197 @@
+{
+    "9ee2905c-7d78-48f7-a383-692ab4e35339": {
+      "color": {
+        "788a31d8-ef3d-445a-b581-c1d11ac7fdba": {
+          "users": 0,
+          "totalSpents": "0"
+        },
+        "a82811e3-6ac8-403b-a808-4d6f7ad882de": {
+          "users": 2,
+          "totalSpents": "662"
+        }
+      },
+      "totalUsers": 10,
+      "shape": {
+        "abede673-fce1-4c69-92bc-a513be53e918": {
+          "users": 0,
+          "totalSpents": "0"
+        },
+        "eb0846c7-b392-4c70-9876-a3f727f80132": {
+          "users": 0,
+          "totalSpents": "0"
+        }
+      },
+      "number": {
+        "77d30803-0d88-45e0-8184-47e9e57247df": {
+          "users": 1,
+          "totalSpents": "876"
+        },
+        "7ad228e4-e8c9-4e89-8b0d-ec389c4b2c43": {
+          "users": 2,
+          "totalSpents": "1280"
+        },
+        "8249b550-4e57-47e7-86b3-ac5e9bbec1d9": {
+          "users": 1,
+          "totalSpents": "933"
+        },
+        "712a93f6-d7cc-42e3-bb23-d25b9278acbc": {
+          "users": 1,
+          "totalSpents": "170"
+        },
+        "bfcfaa09-9bb1-49a1-a044-205398241521": {
+          "users": 0,
+          "totalSpents": "0"
+        },
+        "d5371917-cf5e-441b-95ac-fe00cf495711": {
+          "users": 2,
+          "totalSpents": "446"
+        },
+        "d2c2fc46-33c7-4806-8f31-91b92b7b253f": {
+          "users": 0,
+          "totalSpents": "0"
+        },
+        "ea201f13-a16f-4c5f-bd68-bdea8ce9d47d": {
+          "users": 0,
+          "totalSpents": "0"
+        },
+        "dc52228f-55b4-41a5-96c6-c2407638339f": {
+          "users": 1,
+          "totalSpents": "452"
+        },
+        "5a00aacc-d596-4b1a-b594-5d67ddfc9f13": {
+          "users": 0,
+          "totalSpents": "0"
+        }
+      }
+    },
+    "29eddfc6-38ad-4443-bb1a-444c87d2877c": {
+      "color": {
+        "48687bb3-1bf7-437b-8b29-5a8e399ab91b": {
+          "users": 1,
+          "totalSpents": "797"
+        },
+        "1e236d34-cd36-4621-91c0-91386553ab3a": {
+          "users": 0,
+          "totalSpents": "0"
+        }
+      },
+      "totalUsers": 6,
+      "shape": {
+        "b6167826-6827-476c-8215-c39594cf1d82": {
+          "users": 1,
+          "totalSpents": "635"
+        },
+        "b1df1d56-707c-4da7-8523-7bbce2ec1cc6": {
+          "users": 0,
+          "totalSpents": "0"
+        }
+      },
+      "number": {
+        "753f714e-af1a-424d-a33a-03372540899d": {
+          "users": 0,
+          "totalSpents": "0"
+        },
+        "5125b6e8-29d6-4a0d-a4ce-0257ef9b5d1d": {
+          "users": 0,
+          "totalSpents": "0"
+        },
+        "10626ca2-914b-43b5-8f9f-92a5c4dbf200": {
+          "users": 0,
+          "totalSpents": "0"
+        },
+        "2ab25a3b-3e62-471c-b545-9915020bfd02": {
+          "users": 1,
+          "totalSpents": "87"
+        },
+        "f3020d61-5cc0-4ccb-a0a1-72f7ad40b305": {
+          "users": 0,
+          "totalSpents": "0"
+        },
+        "32f4ffe7-a770-4f16-bc61-161900ef4724": {
+          "users": 1,
+          "totalSpents": "706"
+        },
+        "b8135804-51bf-42b5-9dba-1719ea1e4340": {
+          "users": 0,
+          "totalSpents": "0"
+        },
+        "369aeb12-340e-4a83-a0a8-7d95841f81eb": {
+          "users": 0,
+          "totalSpents": "0"
+        },
+        "3a526506-d8f0-41b9-846f-77654a3c2a42": {
+          "users": 2,
+          "totalSpents": "574"
+        },
+        "4017c1f0-fcba-4e9f-a02f-570eb938657c": {
+          "users": 0,
+          "totalSpents": "0"
+        }
+      }
+    },
+    "f3a07353-be6b-446f-89ae-2e5597df7dce": {
+      "color": {
+        "2044f89c-7c08-430c-837b-34fe434b7c70": {
+          "users": 0,
+          "totalSpents": "0"
+        },
+        "97c5cda6-f291-47c3-a258-64b22a992fe3": {
+          "users": 0,
+          "totalSpents": "0"
+        }
+      },
+      "totalUsers": 9,
+      "shape": {
+        "2500747a-b985-41a5-9e27-3021e40c0c0c": {
+          "users": 0,
+          "totalSpents": "0"
+        },
+        "f95ecf4d-33de-4653-9ec4-b797a4a7a296": {
+          "users": 1,
+          "totalSpents": "542"
+        }
+      },
+      "number": {
+        "7134117c-73f9-48c0-84fd-0cfd9c809860": {
+          "users": 2,
+          "totalSpents": "721"
+        },
+        "1ffd55e0-6994-48fd-9991-aa44462262e8": {
+          "users": 0,
+          "totalSpents": "0"
+        },
+        "387dab2a-3705-4202-abcc-0d4d0d9fcd75": {
+          "users": 1,
+          "totalSpents": "402"
+        },
+        "d329cd5c-cdc6-49ed-b877-b93b6daac994": {
+          "users": 0,
+          "totalSpents": "0"
+        },
+        "9acb72b4-a13e-413d-addd-e312887efed3": {
+          "users": 1,
+          "totalSpents": "244"
+        },
+        "88ecb03b-453b-4c18-afec-63126b70026a": {
+          "users": 0,
+          "totalSpents": "0"
+        },
+        "a0992a05-e1e6-4637-8b5c-86948f936fc0": {
+          "users": 0,
+          "totalSpents": "0"
+        },
+        "69ff4657-3e3d-46c1-b9d9-4d3b19a2d114": {
+          "users": 2,
+          "totalSpents": "823"
+        },
+        "e1898593-f764-4d13-a113-1ef1280bf02b": {
+          "users": 2,
+          "totalSpents": "969"
+        },
+        "78839b8f-0610-4b7d-b2c6-b0189ae312ea": {
+          "users": 0,
+          "totalSpents": "0"
+        }
+      }
+    }
+  }

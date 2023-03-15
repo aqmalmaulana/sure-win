@@ -9,7 +9,7 @@ import { CustomerService } from '../../../services/internal/customerService';
 
 const path = "/v1/customer/login"
 const method = "POST"
-const auth = false
+const auth = "user"
 const bodyValidation: Validation[]= [
     {
         name: "email",

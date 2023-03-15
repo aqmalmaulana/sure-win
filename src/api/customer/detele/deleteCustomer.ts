@@ -7,7 +7,7 @@ import { BusinessError } from '../../../helper/handleError';
 
 const path = "/v1/customer/:id"
 const method = "DELETE"
-const auth = true
+const auth = "user"
 const paramsValidation: Validation[]= [
     {
         name: "id",

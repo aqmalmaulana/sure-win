@@ -689,88 +689,161 @@ const usersGame = [
   }
 ]
 
-let groupedResult = {}
-let totalSpents = {}
+let groupedByGameTypeId = {}
+const collectProductId = {}
+for(const product of products) {
+    if(!groupedByGameTypeId[product.gameTypeId]) {
+        groupedByGameTypeId[product.gameTypeId] = {}
+        collectProductId[product.gameTypeId] = {}
+    }
+
+    if(!groupedByGameTypeId[product.gameTypeId][product.category]) {
+        collectProductId[product.gameTypeId][product.category] = []
+        groupedByGameTypeId[product.gameTypeId][product.category] = {}
+    }
+
+    if(!groupedByGameTypeId[product.gameTypeId].totalUsers) {
+        groupedByGameTypeId[product.gameTypeId].totalUsers = 0
+    }
+
+    if(!groupedByGameTypeId[product.gameTypeId][product.category][product.id]) {
+        groupedByGameTypeId[product.gameTypeId][product.category][product.id] = {
+            users: 0,
+            totalSpents: new Big("0")
+        }
+    }
+
+    collectProductId[product.gameTypeId][product.category].push(product.id)
+}
+
+
 for(const userGame of usersGame) {
   const product = products.find(prod => prod.id === userGame.productId)
-  if(!groupedResult[product.gameTypeId]) {
-    groupedResult[product.gameTypeId] = {} 
-  }
 
-  if(!groupedResult[product.gameTypeId][`${product.category}_${product.id}`]) {
-    groupedResult[product.gameTypeId][`${product.category}_${product.id}`] = {
-        users: [],
-        totalUsers: 0,
-        totalSpents: new Big("0")
-    }
-  }
-
-  if(!totalSpents[product.gameTypeId]) {
-    totalSpents[product.gameTypeId] = {}
-  }
-
-  if(!totalSpents[product.gameTypeId][`${product.category}_${product.id}`]) {
-    totalSpents[product.gameTypeId][`${product.category}_${product.id}`] = new Big("0")
-  }
-
-  totalSpents[product.gameTypeId][`${product.category}_${product.id}`] = totalSpents[product.gameTypeId][`${product.category}_${product.id}`].add(new Big(userGame.spent))
-  groupedResult[product.gameTypeId][`${product.category}_${product.id}`].users.push(userGame)
-  groupedResult[product.gameTypeId][`${product.category}_${product.id}`].totalUsers++
-  groupedResult[product.gameTypeId][`${product.category}_${product.id}`].totalSpents =groupedResult[product.gameTypeId][`${product.category}_${product.id}`].totalSpents.add(new Big(userGame.spent))
-}
-const groupedWinner = {}
-for(const gameTypeId in totalSpents) {
-  for(const key in totalSpents[gameTypeId]) {
-    const [category, productId] = key.split("_")
-    if(!groupedWinner[`${gameTypeId}_${category}`]) {
-      groupedWinner[`${gameTypeId}_${category}`] = {
-        total: new Big("0"),
-        cd: `${gameTypeId}_${category}_${productId}`,
-      }
-    }
-
-    if(groupedWinner[`${gameTypeId}_${category}`].total.lt(new Big(totalSpents[gameTypeId][key]))) {
-      groupedWinner[`${gameTypeId}_${category}`] = {
-        total: totalSpents[gameTypeId][key],
-        cd: `${gameTypeId}_${category}_${productId}`
-      }
-    }
-  }
+  groupedByGameTypeId[product.gameTypeId].totalUsers++
+  groupedByGameTypeId[product.gameTypeId][product.category][product.id].users++
+  groupedByGameTypeId[product.gameTypeId][product.category][product.id].totalSpents = groupedByGameTypeId[product.gameTypeId][product.category][product.id].totalSpents.add(new Big(userGame.spent))
 }
 
-const finalResult = []
-const collectWinnerProductId = []
-const cdWinner = []
-for(const key in groupedWinner) {
-  let groupedByTypeId = {}
-  for(const key2 in groupedWinner[key]) {
-    if(key2 === "cd") {
-      const [gameTypeId, category, cd] = groupedWinner[key][key2].split("_")
-      const data = groupedResult[gameTypeId][`${category}_${cd}`]
-      console.log(data)
-      if(!groupedByTypeId[gameTypeId]) {
-        groupedByTypeId[gameTypeId] = {}
-      }
+let filteredWinner = {}
+let winnerProductId = []
+for(const gameTypeId in groupedByGameTypeId) {
+    if(!filteredWinner[gameTypeId]) {
+        filteredWinner[gameTypeId] = {
+            result: {
+                totalWinner: 0,
+                totalLooser: 0,
+                totalUsers: 0
+            }
+        }
+    }  
+    let totalWinner = 0
+    for(const category in groupedByGameTypeId[gameTypeId]) {
+        if(category !== "totalUsers") {
+            for(const productId in groupedByGameTypeId[gameTypeId][category]) {
+                const {totalSpents, users} = groupedByGameTypeId[gameTypeId][category][productId]
+                if(totalSpents.gt(new Big("0"))) {
+                    if(!filteredWinner[gameTypeId][category]) {
+                        filteredWinner[gameTypeId][category] = {
+                            productId: productId,
+                            totalSpents: totalSpents,
+                            totalWinnerByCategory: users,
+                        }
 
-      groupedByTypeId[gameTypeId] = data
-      collectWinnerProductId.push(cd)
-      cdWinner.push(`${gameTypeId}_${category}_${cd}`)
+                        continue;
+                    }
+                    
+                    if(totalSpents.lt(filteredWinner[gameTypeId][category].totalSpents)) {
+                        filteredWinner[gameTypeId][category].totalSpents = totalSpents
+                        filteredWinner[gameTypeId][category].productId = productId
+                    }
+                }
+            }
+
+            const getProducts = products.filter(product => {
+                return product.category === category && product.gameTypeId === gameTypeId
+            })
+            const randomIndex = Math.floor(Math.random() * getProducts.length) + 1;
+            if (!filteredWinner[gameTypeId][category]) {
+                filteredWinner[gameTypeId][category] = {
+                    productId: getProducts[randomIndex - 1].id,
+                    totalSpents: new Big("0"),
+                    totalWinnerByCategory: 0,
+                }
+            }
+
+            totalWinner += filteredWinner[gameTypeId][category].totalWinnerByCategory
+            winnerProductId.push(filteredWinner[gameTypeId][category].productId)
+        }
     }
-  }
-  finalResult.push(groupedByTypeId)
+
+    filteredWinner[gameTypeId].result.totalWinner = totalWinner
+    filteredWinner[gameTypeId].result.totalUsers = groupedByGameTypeId[gameTypeId]["totalUsers"]
+    filteredWinner[gameTypeId].result.totalLooser = groupedByGameTypeId[gameTypeId]["totalUsers"] - totalWinner
 }
 
-const collectGameId = []
-const updateDataUserGame = usersGame.map(data => {
-  if(collectWinnerProductId.includes(data.productId)) {
-    if(!collectGameId.includes(data.gameId)) {
-      collectGameId.push(data.gameId)
-    }
-    data.result = "WIN"
-  } else {
-    data.result = "LOSS"
-  }
-  return data
-})
+// let temp = {}
+// for(const gameTypeId in groupedByGameTypeId) {
+//     for(const category in groupedByGameTypeId[gameTypeId]) {
+//         const {totalUsers, number, color, shape} = groupedByGameTypeId[gameTypeId]
+//         let totalUserCategory = 0
+//         for(const productId in groupedByGameTypeId[gameTypeId][category]) {
+//             const {totalSpents, users} = groupedByGameTypeId[gameTypeId][category][productId]
+//             if(!filteredWinner[gameTypeId]) {
+//                 filteredWinner[gameTypeId] = {}
+//                 temp[gameTypeId] = {}
+//             }
+            
+//             if(!filteredWinner[gameTypeId][category]) {
+//                 filteredWinner[gameTypeId][category] = {
+//                     productId,
+//                     totalSpents: new Big("0"),
+//                     totalUsersWinner: 0,
+//                     users: 0
+//                 }
+//             }
+            
+//             if(filteredWinner[gameTypeId][category].totalSpents.gt(totalSpents)) {
+//                 filteredWinner[gameTypeId][category] = {
+//                     productId,
+//                     totalSpents: new Big(totalSpents),
+//                     totalUsersWinner: users,
+//                     totalUserCategory,
+//                     users: totalUsers
+//                 }
+//             } 
+//         }
+//         console.log("Category : "+ category)
+//         console.log(JSON.parse(JSON.stringify(filteredWinner)))
+//         console.log("")
+//         console.log("")
+//     }
+// }
 
-console.log(finalResult)
+
+// for(const gameTypeId in filteredWinner) {
+//     for (const category in filteredWinner[gameTypeId]) {
+//         for(const key in filteredWinner[gameTypeId][category]) {
+//             const {users, productId, totalSpents, totalUsersWinner} = filteredWinner[gameTypeId][category][key]
+//             if(users === 0) {
+//                 const getProducts = products.filter(product => {
+//                     return product.category === category && product.gameTypeId === gameTypeId
+//                 })
+
+//                 filteredWinner[gameTypeId][category] = {
+//                     productId: getProducts[getProducts.length - 1].id,
+//                     totalSpents: new Big("0"),
+//                     totalUsersWinner: 0,
+//                     users: 0
+//                 }
+//             }
+//         }
+//     }
+// }
+
+// console.log("after")
+console.log(JSON.parse(JSON.stringify(filteredWinner)))
+console.log(winnerProductId)
+// console.log(JSON.parse(JSON.stringify(temp)))
+// console.log(JSON.stringify(groupedByGameTypeId))
+// console.log(JSON.parse(JSON.stringify(groupedByCategory)))

@@ -1,38 +1,16 @@
 import { Request, Response } from 'express';
-import {  ErrorType, InvoiceStatuses, OrderStatuses, OrderType, RoleID } from '../../../enum';
+import { InvoiceStatuses, OrderStatuses, OrderType} from '../../../enum';
 import { Validation, Validator } from '../../../helper/validator';
-import { CustomerService } from '../../../services/internal/customerService';
 import { apiRouter } from '../../../interfaces';
 import { OrderSerivce } from '../../../services/internal/orderService';
 import { InvoiceService } from '../../../services/internal/invoiceService';
-import { BusinessError } from '../../../helper/handleError';
-import { ExternalNowPaymentsService } from '../../../services/external/externalNowPayments';
 import { Config } from '../../../config';
-import { UniqueGenerator } from '../../../helper/uniqueGenerator';
+import { FundService } from '../../../services/internal/fundsService';
+import Big from 'big.js';
 
 const path = "/v1/order/back-url"
 const method = "POST"
-const auth = true
-
-// {
-//   payment_id: 5606226242,
-//   invoice_id: 6306266108,
-//   payment_status: 'finished',
-//   pay_address: 'TSTRkU4u5pUThVWa7P3TELy5yCWw32e3hK',
-//   price_amount: 2.636792,
-//   price_currency: 'usd',
-//   pay_amount: 39.9,
-//   actually_paid: 39.9,
-//   actually_paid_at_fiat: 0,
-//   pay_currency: 'trx',
-//   order_id: 'Test-firstOrder-4',
-//   order_description: 'Apple Macbook Pro 2019 x 1',
-//   purchase_id: '6276850312',
-//   created_at: '2023-03-09T11:10:12.511Z',
-//   updated_at: '2023-03-09T11:18:31.280Z',
-//   outcome_amount: 39.39507,
-//   outcome_currency: 'trx'
-// }
+const auth = "nowpayments"
 
 const bodyValidation: Validation[]= [
     {
@@ -68,8 +46,7 @@ const bodyValidation: Validation[]= [
     },
     {
         name: "actually_paid",
-        type: "number",
-        required: true
+        type: "number"
     },
     {
         name: "actually_paid_at_fiat",
@@ -82,7 +59,6 @@ const bodyValidation: Validation[]= [
     {
         name: "order_id",
         type: "string",
-        required: true,
     },
     {
         name: "order_description",
@@ -132,12 +108,13 @@ const main = async(req: Request, res: Response) => {
     if(!requestBody) {
         return;
     }
+    console.log(requestBody)
 
     const config = new Config()
     const invoiceService = new InvoiceService()
     const invoice = await invoiceService.findByTrxRefNo(requestBody.order_id)
     if(!invoice) {
-        throw new Error("Something went wrong with order_id");
+        throw new Error("Something went wrong with order_id - invoice");
     }
 
     const newInvoiceStatus = InvoiceStatuses[requestBody.payment_status.toUpperCase()]
@@ -159,6 +136,43 @@ const main = async(req: Request, res: Response) => {
     }
 
     await invoiceService.updateStatus(invoice, newInvoiceStatus)
+    const orderService = new OrderSerivce()
+    const order = await orderService.findByTrxRefNo(requestBody.order_id)
+    if(!order) {
+        throw new Error("Something went wrong with order_id - order");
+    }
+
+    const updatedOrder = await orderService.update({
+        cifId: order.cifId,
+        trxRefNo: order.trxRefNo,
+        description: order.description,
+        priceAmount: requestBody.price_amount.toString(),
+        priceCurrency: requestBody.price_currency,
+        status: orderStatus,
+        type: OrderType[order.type.toUpperCase()],
+        amount: requestBody.pay_amount.toString(),
+        payAddress: requestBody.pay_address,
+        payAmount: requestBody.actually_paid.toString(),
+        payCurrency: order.payCurrency,
+        purchaseId: requestBody.purchase_id,
+        paymentId: requestBody.payment_id.toString(),
+        updatedAt: new Date(),
+    })
+
+    if(updatedOrder.status === OrderStatuses.FINISHED) {
+        const fundService = new FundService()
+        const fund = await fundService.findFundByCifId(updatedOrder.cifId)
+        const newBalance = new Big(fund.balance).add(updatedOrder.amount)
+
+        await fundService.update({
+            cifId: fund.cifId,
+            currency: fund.currency,
+            balance: newBalance.toString(),
+            updatedAt: new Date()
+        })
+    }
+
+    res.sendStatus(200)
 }
 
 const postBackUrl: apiRouter = {

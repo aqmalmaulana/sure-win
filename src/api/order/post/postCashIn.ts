@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import {  ErrorType, InvoiceStatuses, OrderStatuses, OrderType, RoleID } from '../../../enum';
+import {  ErrorType, InvoiceStatuses, OrderStatuses, OrderType } from '../../../enum';
 import { Validation, Validator } from '../../../helper/validator';
 import { CustomerService } from '../../../services/internal/customerService';
 import { apiRouter } from '../../../interfaces';
@@ -12,7 +12,7 @@ import { UniqueGenerator } from '../../../helper/uniqueGenerator';
 
 const path = "/v1/order/cash-in"
 const method = "POST"
-const auth = true
+const auth = "user"
 
 const bodyValidation: Validation[]= [
     {
@@ -40,10 +40,9 @@ const main = async(req: Request, res: Response) => {
     if(!requestBody) {
         return;
     }
-
     const config = new Config()
-    if(requestBody.amount < "40") {
-        throw new BusinessError("Minimum for cash in 40 TRX", ErrorType.Validation)
+    if(parseFloat(requestBody.amount) < config.minDeposit) {
+        throw new BusinessError(`Minimum for cash in ${config.minDeposit} TRX`, ErrorType.Validation)
     }
 
     const customerService = new CustomerService()
@@ -59,13 +58,34 @@ const main = async(req: Request, res: Response) => {
         to: "usd"
     })
 
+    console.log("ESTIMATION PRICE : " + estPrice.estimated_amount)
+    
     if(!estPrice) {
         throw new BusinessError(estPrice.message || "Something wrong when check estimated price", estPrice.code || ErrorType.Internal);
     }
-
+    
+    const orderService = new OrderSerivce()
     const trxRefNo = await UniqueGenerator.invoice(customer, OrderType.BUY)
+    const createOrder = await orderService.create({
+        cifId: customer.id,
+        trxRefNo: trxRefNo,
+        description: `Top up for ${customer.username}`,
+        priceAmount: estPrice.estimated_amount,
+        priceCurrency: "usd",
+        status: OrderStatuses.WAITING,
+        type: OrderType.BUY,
+        amount: requestBody.amount,
+        payAddress: "",
+        payAmount: "",
+        payCurrency: "trx",
+        purchaseId: "",
+        paymentId: "",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    })
+
     const invoiceExt = await nowPaymentsService.createInvoice({
-        price_amount: parseInt(estPrice.estimated_amount),
+        price_amount: parseFloat(estPrice.estimated_amount),
         price_currency: "usd",
         order_id: trxRefNo,
         order_description: `Top up for ${customer.username}`,
@@ -78,6 +98,18 @@ const main = async(req: Request, res: Response) => {
     })
     
     if(!invoiceExt) {
+        await orderService.update({
+            cifId: createOrder.cifId,
+            trxRefNo: createOrder.trxRefNo,
+            description: createOrder.description,
+            priceAmount: createOrder.priceAmount,
+            priceCurrency: createOrder.priceCurrency,
+            status: OrderStatuses.FAILED,
+            type: OrderType[createOrder.priceCurrency.toUpperCase()],
+            amount: createOrder.amount,
+            updatedAt: new Date(),
+            remark: "Something wrong when create invoice"
+        })
         throw new BusinessError(invoiceExt.message || "Something wrong when create invoice", invoiceExt.code || ErrorType.Internal);
     }
 
@@ -99,24 +131,6 @@ const main = async(req: Request, res: Response) => {
         updatedAt: new Date(),
         isFixedRate: invoiceExt.is_fixed_rate,
         isFeePaidByUser: invoiceExt.is_fee_paid_by_user
-    })
-
-    const orderService = new OrderSerivce()
-    const createOrder = await orderService.create({
-        cifId: customer.id,
-        trxRefNo: trxRefNo,
-        description: `Top up for ${customer.username}`,
-        priceAmount: estPrice.estimated_amount,
-        priceCurrency: "usd",
-        status: OrderStatuses.WAITING,
-        type: OrderType.BUY,
-        payAddress: "",
-        payAmount: requestBody.amount,
-        payCurrency: "trx",
-        purchaseId: "",
-        paymentId: "",
-        createdAt: new Date(),
-        updatedAt: new Date(),
     })
 
     const orderClone = JSON.parse(JSON.stringify(createOrder))

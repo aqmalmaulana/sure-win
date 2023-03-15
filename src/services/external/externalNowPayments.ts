@@ -45,8 +45,12 @@ export class ExternalNowPaymentsService {
     }
 
     private async login(email: string, password: string): Promise<any> {
+        console.log("TRYING TO LOGIN")
         const response = await fetch(`${this.baseUrl}/v1/auth`, {
             method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({
                 email,
                 password
@@ -54,15 +58,16 @@ export class ExternalNowPaymentsService {
         })
         try {
             const token = await response.json()
-            await new RedisService().set("nowPaymentsToken", token, 5 * 60)
+            await new RedisService().setJson("nowPaymentsToken", token, 5 * 60)
+            console.log("SUCCESSED LOGIN TO NOYPAYMENTS")
             return token
         } catch (error) {
-            throw new Error("Something went wrong when login to Nowpayments")
+            throw new BusinessError(error.message || "Something went wrong when login to Nowpayments", error.code || ErrorType.Internal)
         }
     }
 
     private async request(method: "POST" | "GET" | "PATCH" | "DELETE", path: string, data?: any, isVerifyWithdrawal?: boolean): Promise<any> {
-        const getToken = await new RedisService().get("nowPaymentsToken")
+        const getToken = await new RedisService().getJson("nowPaymentsToken")
         let token: any
         if(getToken) {
             token = getToken
@@ -73,7 +78,7 @@ export class ExternalNowPaymentsService {
         const config: RequestInit = {
           method,
           headers: {
-            Authorization: `Bearer ${token?.token}`,
+            Authorization: `Bearer ${token.token}`,
             'Content-Type': 'application/json',
             'x-api-key': this.apiKey
           },
@@ -87,7 +92,8 @@ export class ExternalNowPaymentsService {
         try {
             const response: any = await fetch(`${this.baseUrl}/${path}`, config);
             if(!response.ok) {
-                throw new BusinessError(response.message || "Something wrong when request to nowPayments API " + path, response.code || ErrorType.Internal);
+                const res = await response.json()
+                throw new BusinessError(res.message || "Something wrong when request to nowPayments API " + path, response.code || ErrorType.Internal);
             }
             let res
             if(isVerifyWithdrawal) {
@@ -99,6 +105,7 @@ export class ExternalNowPaymentsService {
             }
             return res
         } catch (error) {
+            console.error(error)
             console.error(`An error occurred: ${error.message}`)
         }
     }

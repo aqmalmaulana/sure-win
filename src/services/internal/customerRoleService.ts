@@ -30,31 +30,20 @@ export class CustomerRoleService{
         return await this.role.findByIdAndUpdate(data.id, data)
     }
 
-    async delete(id: string): Promise<ICustomerRole>{
-        return await this.role.findOneAndUpdate(
-            {_id: id},
-            {deleteFlag: true},
-            {new: true}
-        )
-    }
-
     async findById(id: string): Promise<ICustomerRole> {
         return await this.role.findOne({
-            _id: id,
-            deleteFlag: false
+            id
         })
     }
 
     async findByName(name: string): Promise<ICustomerRole> {
         return await this.role.findOne({
             name,
-            deleteFlag: false
         })
     }
 
     async findAll(): Promise<ICustomerRole[]> {
         return await this.role.find({
-            deleteFlag: false
         })
     }
 }

@@ -17,6 +17,24 @@ export class FundService {
         return await this.fund.create(clone)
     }
 
+    async update(data: FundsDto): Promise<IFunds> {
+        return await this.fund.findOneAndUpdate({cifId: data.cifId}, data, {new: true})
+    }
+
+    async updateBulk(datas: FundsDto[]): Promise<void> {
+        const bulkWriteOperations = []
+        datas.forEach(async (data) => {
+           bulkWriteOperations.push({
+                updateOne: {
+                    filter: {id: data.id},
+                    update: data
+                }
+           })
+        })
+
+        await this.fund.bulkWrite(bulkWriteOperations)
+    }
+
     async findFundById(id: string): Promise<IFunds> {
         return this.fund.findById(id)
     }
@@ -27,4 +45,9 @@ export class FundService {
         })
     }
 
+    async findFundByCifIds(cifIds: string[]): Promise<IFunds[]> {
+        return this.fund.find({
+            cifId: {$in: cifIds}
+        })
+    }
 }

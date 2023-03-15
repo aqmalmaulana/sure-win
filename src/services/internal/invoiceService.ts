@@ -39,7 +39,7 @@ export class InvoiceService {
     async updateStatus(data: InvoiceDto, status: InvoiceStatuses): Promise<IInvoice> {
         return await this.invoice.findOneAndUpdate({
             trxRefNo: data.trxRefNo
-        }, {status}, {new: true})
+        }, {status, updatedAt: new Date()}, {new: true})
     }
 
     async findByExternalInvoiceId(extInvoiceId: string): Promise<IInvoice> {

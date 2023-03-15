@@ -3,5 +3,6 @@ export class FundsDto {
     public cifId: string;
     public currency: string;
     public balance: string;
+    public bonus?:string;
     public updatedAt: Date;
 }

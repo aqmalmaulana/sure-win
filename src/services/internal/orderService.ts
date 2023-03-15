@@ -2,6 +2,7 @@ import { Model } from "mongoose";
 import { OrderDto } from "../../dto/orderDto";
 import orderModels, { IOrder } from "../../models/orderModels";
 import { v4 as uuid } from 'uuid';
+import { OrderType } from "../../enum";
 
 export class OrderSerivce {
     private order: Model<IOrder>
@@ -17,8 +18,21 @@ export class OrderSerivce {
         return await this.order.create(clone)
     }
 
+    async createBulk(datas: OrderDto[]): Promise<IOrder[]> {
+        const clone = JSON.parse(JSON.stringify(datas))
+        for(const data of clone) {
+            data._id = uuid()
+        }
+
+        return await this.order.insertMany(datas)
+    }
+
     async update(data: OrderDto): Promise<IOrder> {
-        return await this.order.findOneAndUpdate({trxRefNo: data.trxRefNo}, data)
+        return await this.order.findOneAndUpdate({trxRefNo: data.trxRefNo}, data, {new: true})
+    }
+
+    async updateByPaymentId(data: OrderDto): Promise<IOrder> {
+        return await this.order.findOneAndUpdate({paymentId: data.paymentId}, data, {new: true})
     }
 
     async findById(id: string): Promise<IOrder> {
@@ -26,13 +40,15 @@ export class OrderSerivce {
     }
 
     async findAllByCifId(cifId: string, page?: number, limit?: number): Promise<IOrder[]> {
-        // if(page && limit) {
-        //     page = 0
-        // }
-
-        if(!limit) 
         return await this.order.find({
             cifId
+        })
+    }
+
+    async findByPaymentId(paymentId: string, type: OrderType): Promise<IOrder> {
+        return await this.order.findOne({
+            paymentId,
+            type
         })
     }
 

@@ -4,7 +4,7 @@ import bcrypt from "bcrypt"
 import { CustomerDto } from "../../dto/customerDto";
 import { v4 as uuid } from 'uuid';
 
-export class CustomerService{
+export class CustomerService {
     private customer: Model<ICustomer>;
 
     constructor() {
@@ -58,10 +58,12 @@ export class CustomerService{
         })
     }
 
-    async findByEmailAndUsername(email: string, username: string): Promise<ICustomer>{
+    async findByEmailOrUsername(email: string, username: string): Promise<ICustomer>{
         return await this.customer.findOne({
-            email,
-            username
+            $or: [
+                {email},
+                {username}
+            ]
         })
     }
 

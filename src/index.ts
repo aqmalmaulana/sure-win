@@ -12,6 +12,9 @@ import getApp from './app';
 
 (async()=> {
     try {
+        if(process.env.NODE_ENV === "DEVELOPMENT") {
+            console.log(process.env)
+        }
         const app: Express = express();
         const port = process.env.PORT || 3000;
         const main = getApp(app)

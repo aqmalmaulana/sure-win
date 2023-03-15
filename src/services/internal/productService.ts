@@ -26,4 +26,14 @@ export class ProductService {
             gameTypeId
         })
     }
+
+    async findProductsByGameTypeIds(gameTypeIds: string[]): Promise<IProduct[]> {
+        return this.product.find({
+            gameTypeId: { $in: gameTypeIds }
+        })
+    }
+
+    async findAllProducts(): Promise<IProduct[]> {
+        return this.product.find()
+    }
 }

@@ -1,15 +1,13 @@
-import redis from 'redis';
+import { createClient } from 'redis';
 import { Config } from '../../config';
 
 class RedisService {
-  private redisClient: redis.RedisClient;
+  private redisClient;
 
   constructor() {
     const config = new Config()
-    this.redisClient = redis.createClient({
-      host: config.redisHost,
-      password: config.redisPassword,
-      port: config.redisPort,
+    this.redisClient = createClient({
+      url: `redis://default:${config.redisPassword}@${config.redisHost}:${config.redisPort}`
     });
 
     this.redisClient.on('error', (error) => {
@@ -17,7 +15,21 @@ class RedisService {
     });
   }
 
-  public async set(key: string, value: string, ttl?: number): Promise<void> {
+  public async setJson(key: string, value: any, ttl?: number): Promise<any> {
+    const jsonValue = JSON.stringify(value)
+    return await this.set(key, jsonValue, ttl)
+  }
+
+  public async getJson<T>(key: string): Promise<T> {
+    const value = await this.get(key)
+    if(!value) {
+      return null
+    }
+
+    return JSON.parse(value) as T
+  }
+
+  public async set(key: string, value: any, ttl?: number): Promise<void> {
     try {
       await new Promise<void>((resolve, reject) => {
         if (ttl) {

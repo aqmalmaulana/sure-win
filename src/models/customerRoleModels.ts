@@ -13,7 +13,7 @@ const customerRoleSchema = new Schema<ICustomerRole>({
     name: {
         type: String,
         required: true,
-        enum: ["amin", "user"]
+        enum: ["admin", "user"]
     },
 },{
     toJSON: {

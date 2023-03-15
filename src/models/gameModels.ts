@@ -5,7 +5,11 @@ export interface IGame extends Document {
     id: string;
     periode: string;
     gameTypeId: string;
-    result: string;
+    result: {
+        color: string;
+        number: string;
+        shape: string;
+    };
     winner: number;
     looser: number;
     startAt: Date;
@@ -18,15 +22,16 @@ const gameSchema = new Schema<IGame>({
     _id: {
         type: String
     },
-    periode: {
-        type: String,
-        required: true
-    },
+    periode: String,
     gameTypeId: {
         type: String,
         required: true
     },
-    result: String,
+    result: {
+        color: String,
+        number: String,
+        shape: String
+    },
     winner: Number,
     looser: Number,
     startAt: {

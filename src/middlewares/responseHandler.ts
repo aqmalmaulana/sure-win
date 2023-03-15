@@ -3,6 +3,7 @@ import { ErrorStatusCode, ErrorType } from '../enum';
 
 export function responseHandler(error: Error, req: Request, res: Response, next: NextFunction) {
     if(error) {
+      console.error(error)
       switch (error.name) {
         case ErrorType.Authentication:
           res.status(ErrorStatusCode.Authentication);
@@ -28,7 +29,6 @@ export function responseHandler(error: Error, req: Request, res: Response, next:
         errorCode: error.name,
         message: error.message
       })
-      console.log(error)
     }
   return res;
 }

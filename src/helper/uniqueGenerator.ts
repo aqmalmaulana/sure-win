@@ -57,13 +57,16 @@ export class UniqueGenerator {
 
     const orderService = new OrderSerivce();
     const latestOrder = await orderService.findLatestTrxRefNoByCifIdAndType(data.id, type)
+    console.log(latestOrder)
     let lastNum = 1;
     if (latestOrder) {
-      const getNum = latestOrder.trxRefNo.split("/");
+      const splitter = latestOrder.trxRefNo.split("/")
+      const getNum = splitter[splitter.length - 1];
+      console.log("Last num : " + getNum)
       const currentMonth = new Date().getMonth() + 1;
-      const lastMonth = +getNum[getNum.length - 2]
+      const lastMonth = +splitter[splitter.length - 2]
       if(currentMonth === lastMonth) {
-        lastNum = +getNum[getNum.length - 1] + 1
+        lastNum = +splitter[splitter.length - 1] + 1
       }
     }
 

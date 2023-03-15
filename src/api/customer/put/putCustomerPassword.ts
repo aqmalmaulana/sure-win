@@ -8,7 +8,7 @@ import bcrypt from 'bcrypt';
 
 const path = "/v1/customer-password"
 const method = "PUT"
-const auth = true
+const auth = "user"
 const bodyValidation: Validation[]= [
     {
         name: "id",

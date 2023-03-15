@@ -12,6 +12,7 @@ export interface IOrder extends Document {
     type: string;
     productId: string;
     gameId: string;
+    amount: string;
     payAddress: string;
     payAmount: string;
     payCurrency: string;
@@ -19,12 +20,14 @@ export interface IOrder extends Document {
     paymentId: string;
     createdAt: Date;
     updatedAt: Date;
+    remark: string;
+    hash: string;
 }
 
 const orderSchema = new Schema<IOrder>({
     _id: { type: String },
     cifId: { type: String, required: true },
-    trxRefNo: { type: String, required: true, unique: true },
+    trxRefNo: { type: String },
     description: { type: String, required: true },
     priceAmount: { type: String, required: true },
     priceCurrency: { type: String, required: true },
@@ -32,13 +35,16 @@ const orderSchema = new Schema<IOrder>({
     type: { type: String, required: true },
     productId: String,
     gameId: String,
+    amount: { type: String, required: true },
     payAddress: String,
-    payAmount: { type: String, required: true },
-    payCurrency: { type: String, required: true },
+    payAmount: String,
+    payCurrency: String,
     purchaseId: String,
     paymentId: String,
     createdAt: Date,
-    updatedAt: Date
+    updatedAt: Date,
+    remark: String,
+    hash: String,
 },{
     toJSON: {
       virtuals: true,

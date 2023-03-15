@@ -1,10 +1,14 @@
 import { Request, Response } from "express"
+import { ErrorType } from "../../../enum"
+import { BusinessError } from "../../../helper/handleError"
 import { Validation, Validator } from "../../../helper/validator"
 import { apiRouter } from "../../../interfaces"
+import { GameTypeService } from "../../../services/internal/gameTypeService"
+import { ProductService } from "../../../services/internal/productService"
 
 const path = "/v1/product"
 const method = "POST"
-const authAdmin = true
+const auth = "admin"
 const bodyValidation: Validation[]= [
     {
         name: "gameTypeId",
@@ -50,14 +54,30 @@ const main = async(req: Request, res: Response) => {
     if(!requestBody) {
         return;
     }
-    // const gameTyoe = 
+    const gameTypeService = new GameTypeService()
+    const gameType = await gameTypeService.findGameTypeById(requestBody.gameTypeId)
+    if(!gameType) {
+        throw new BusinessError("Game type id not found", ErrorType.NotFound)
+    }
+
+    const productService = new ProductService()
+    const newProduct = await productService.create({
+        name: requestBody.name,
+        gameTypeId: gameType.id,
+        cd: requestBody.name.toLowerCase(),
+        currency: requestBody.currency,
+        description: requestBody.description,
+        category: requestBody.category
+    })
+
+    res.status(200).send(newProduct)
 }
 
-const postCustomerRegister: apiRouter = {
+const postProduct: apiRouter = {
     path,
     method,
     main,
-    authAdmin
+    auth
 }
 
-export default postCustomerRegister
+export default postProduct

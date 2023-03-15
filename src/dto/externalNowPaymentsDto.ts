@@ -54,7 +54,8 @@ export class PostWithdrawalExternal {
         amount: number;
         extra_id?: string;
         payout_description?: string;
-        unique_external_id: string;
+        unique_external_id?: string;
+        ipn_callback_url?: string;
     }>
 }
 
