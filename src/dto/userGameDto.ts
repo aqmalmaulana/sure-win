@@ -5,4 +5,6 @@ export class UserGameDto {
     productId: string;
     spent: string;
     result: "PENDING" | "WIN" | "LOSS";
+    createdAt?: Date;
+    updatedAt?: Date;
 }

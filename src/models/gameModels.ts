@@ -1,5 +1,4 @@
-import { Document, model, Schema } from 'mongoose';
-import { v4 as uuid } from 'uuid';
+import { Document, model, Schema } from "mongoose";
 
 export interface IGame extends Document {
     id: string;
@@ -18,52 +17,55 @@ export interface IGame extends Document {
     updatedAt: Date;
 }
 
-const gameSchema = new Schema<IGame>({
-    _id: {
-        type: String
+const gameSchema = new Schema<IGame>(
+    {
+        _id: {
+            type: String,
+        },
+        periode: String,
+        gameTypeId: {
+            type: String,
+            required: true,
+        },
+        result: {
+            color: String,
+            number: String,
+            shape: String,
+        },
+        winner: Number,
+        looser: Number,
+        startAt: {
+            type: Date,
+            required: true,
+        },
+        finishAt: {
+            type: Date,
+            required: true,
+        },
+        createdAt: {
+            type: Date,
+        },
+        updatedAt: {
+            type: Date,
+        },
     },
-    periode: String,
-    gameTypeId: {
-        type: String,
-        required: true
+    {
+        toJSON: {
+            virtuals: true,
+            transform: function (doc, ret) {
+                ret.id = ret._id;
+                delete ret._id;
+            },
+        },
+        toObject: {
+            virtuals: true,
+            transform: function (doc, ret) {
+                ret.id = ret._id;
+                delete ret._id;
+            },
+        },
+        versionKey: false,
     },
-    result: {
-        color: String,
-        number: String,
-        shape: String
-    },
-    winner: Number,
-    looser: Number,
-    startAt: {
-        type: Date,
-        required:true
-    },
-    finishAt: {
-        type: Date,
-        required: true
-    },
-    createdAt: {
-        type: Date
-    },
-    updatedAt: {
-        type: Date
-    }
-},{
-    toJSON: {
-      virtuals: true,
-      transform: function(doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-      },
-    },
-    toObject: {
-      virtuals: true,
-      transform: function(doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-      },
-    },
-    versionKey: false
-})
+);
 
-export default model<IGame>('game', gameSchema)
+export default model<IGame>("game", gameSchema);

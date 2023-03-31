@@ -1,23 +1,23 @@
-import { Request, Response } from 'express';
-import { InvoiceStatuses, OrderStatuses, OrderType} from '../../../enum';
-import { Validation, Validator } from '../../../helper/validator';
-import { apiRouter } from '../../../interfaces';
-import { OrderSerivce } from '../../../services/internal/orderService';
-import { InvoiceService } from '../../../services/internal/invoiceService';
-import { Config } from '../../../config';
-import { FundService } from '../../../services/internal/fundsService';
-import Big from 'big.js';
-import { OrderDto } from '../../../dto/orderDto';
+import { Request, Response } from "express";
+import { InvoiceStatuses, OrderStatuses, OrderType } from "../../../enum";
+import { Validation, Validator } from "../../../helper/validator";
+import { apiRouter } from "../../../interfaces";
+import { OrderSerivce } from "../../../services/internal/orderService";
+import { InvoiceService } from "../../../services/internal/invoiceService";
+import { Config } from "../../../config";
+import { FundService } from "../../../services/internal/fundsService";
+import Big from "big.js";
+import { OrderDto } from "../../../dto/orderDto";
 
-const path = "/v1/order/back-url-withdrawal"
-const method = "POST"
-const auth = "nowpayments"
+const path = "/v1/order/back-url-withdrawal";
+const method = "POST";
+const auth = "nowpayments";
 
-const bodyValidation: Validation[]= [
+const bodyValidation: Validation[] = [
     {
         name: "id",
         type: "string",
-        required: true
+        required: true,
     },
     {
         name: "address",
@@ -27,12 +27,12 @@ const bodyValidation: Validation[]= [
     {
         name: "currency",
         type: "string",
-        required: true
+        required: true,
     },
     {
         name: "amount",
         type: "string",
-        required: true
+        required: true,
     },
     {
         name: "batchWithdrawalId",
@@ -40,15 +40,15 @@ const bodyValidation: Validation[]= [
     },
     {
         name: "status",
-        type: "string"
+        type: "string",
     },
     {
         name: "extra_id",
-        type: "string"
+        type: "string",
     },
     {
         name: "hash",
-        type: "string"
+        type: "string",
     },
     {
         name: "error",
@@ -60,14 +60,14 @@ const bodyValidation: Validation[]= [
     },
     {
         name: "requestedAt",
-        type: "string"
+        type: "string",
     },
     {
         name: "updatedAt",
         type: "string",
-    }
-]
-const main = async(req: Request, res: Response) => {
+    },
+];
+const main = async (req: Request, res: Response) => {
     const requestBody: {
         id: string;
         address: string;
@@ -81,21 +81,21 @@ const main = async(req: Request, res: Response) => {
         createdAt: string;
         requestedAt: string;
         updatedAt: string;
-    } = new Validator(req, res).process(bodyValidation, "body")
-    if(!requestBody) {
+    } = new Validator(req, res).process(bodyValidation, "body");
+    if (!requestBody) {
         return;
     }
 
-    console.log(requestBody)
+    console.log(requestBody);
 
-    const orderService = new OrderSerivce()
-    const order = await orderService.findByPaymentId(requestBody.id, OrderType.SELL)
-    if(!order) {
+    const orderService = new OrderSerivce();
+    const order = await orderService.findByPaymentId(requestBody.id, OrderType.SELL);
+    if (!order) {
         throw new Error("Something wrong with payout ID");
     }
 
-    const newStatus = OrderStatuses[requestBody.status.toUpperCase()]
-    if(!newStatus) {
+    const newStatus = OrderStatuses[requestBody.status.toUpperCase()];
+    if (!newStatus) {
         throw new Error("Something wrong with status " + requestBody.status);
     }
 
@@ -106,7 +106,7 @@ const main = async(req: Request, res: Response) => {
         priceAmount: order.priceAmount,
         priceCurrency: order.priceCurrency,
         status: newStatus,
-        type: OrderType[order.type.toLocaleUpperCase()],
+        type: OrderType.SELL,
         amount: order.amount,
         payAddress: requestBody.address,
         payAmount: requestBody.amount,
@@ -115,32 +115,32 @@ const main = async(req: Request, res: Response) => {
         paymentId: requestBody.id,
         updatedAt: new Date(),
         hash: requestBody.hash,
-        remark: requestBody.error
-    }
-    const updatedOrder = await orderService.update(data)
+        remark: requestBody.error,
+    };
+    const updatedOrder = await orderService.update(data);
 
-    if(newStatus === OrderStatuses.FINISHED) {
-        const fundService = new FundService()
-        const fund = await fundService.findFundByCifId(updatedOrder.cifId)
+    if (newStatus === OrderStatuses.FINISHED) {
+        const fundService = new FundService();
+        const fund = await fundService.findFundByCifId(updatedOrder.cifId);
 
-        const newBalance = new Big(fund.balance).minus(updatedOrder.amount)
+        const newBalance = new Big(fund.balance).minus(updatedOrder.amount);
 
         await fundService.update({
             cifId: fund.cifId,
             currency: fund.currency,
             balance: newBalance.toString(),
-            updatedAt: new Date()
-        })
+            updatedAt: new Date(),
+        });
     }
 
-    res.sendStatus(200)
-}
+    res.sendStatus(200);
+};
 
 const postBackUrlWithdrawal: apiRouter = {
     path,
     method,
     main,
-    auth
-}
+    auth,
+};
 
-export default postBackUrlWithdrawal
+export default postBackUrlWithdrawal;

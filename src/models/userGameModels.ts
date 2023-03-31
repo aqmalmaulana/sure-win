@@ -1,5 +1,5 @@
-import { Document, model, Schema } from 'mongoose';
-import { v4 as uuid } from 'uuid';
+import { Document, model, Schema } from "mongoose";
+import { v4 as uuid } from "uuid";
 
 export interface IUserGame extends Document {
     id: string;
@@ -8,49 +8,56 @@ export interface IUserGame extends Document {
     productId: string;
     spent: string;
     result: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
-const useGameSchema = new Schema<IUserGame>({
-    _id: {
-        type: String
+const useGameSchema = new Schema<IUserGame>(
+    {
+        _id: {
+            type: String,
+        },
+        cifId: {
+            type: String,
+            required: true,
+        },
+        gameId: {
+            type: String,
+            required: true,
+        },
+        productId: {
+            type: String,
+            required: true,
+        },
+        spent: {
+            type: String,
+            required: true,
+        },
+        result: {
+            type: String,
+            required: true,
+            enum: ["PENDING", "WIN", "LOSS"],
+        },
+        createdAt: Date,
+        updatedAt: Date,
     },
-    cifId: {
-        type: String,
-        required: true
+    {
+        toJSON: {
+            virtuals: true,
+            transform: function (doc, ret) {
+                ret.id = ret._id;
+                delete ret._id;
+            },
+        },
+        toObject: {
+            virtuals: true,
+            transform: function (doc, ret) {
+                ret.id = ret._id;
+                delete ret._id;
+            },
+        },
+        versionKey: false,
     },
-    gameId: {
-        type: String,
-        required: true
-    },
-    productId: {
-        type: String,
-        required: true
-    },
-    spent: {
-        type: String,
-        required: true
-    },
-    result: {
-        type: String,
-        required: true,
-        enum: ["PENDING", "WIN", "LOSS"]
-    },
-},{
-    toJSON: {
-      virtuals: true,
-      transform: function(doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-      },
-    },
-    toObject: {
-      virtuals: true,
-      transform: function(doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-      },
-    },
-    versionKey: false
-})
+);
 
-export default model<IUserGame>('userGame', useGameSchema)
+export default model<IUserGame>("userGame", useGameSchema);

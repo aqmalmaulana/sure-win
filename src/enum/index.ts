@@ -4,7 +4,7 @@ export enum ErrorType {
     Validation = "ValidationError",
     NotFound = "NotFoundError",
     Internal = "InternalServerError",
-    Duplicate = "DuplicateError"
+    Duplicate = "DuplicateError",
 }
 
 export enum ErrorStatusCode {
@@ -13,7 +13,7 @@ export enum ErrorStatusCode {
     Validation = 422,
     NotFound = 404,
     Internal = 500,
-    Duplicate = 409
+    Duplicate = 409,
 }
 
 export enum RoleID {
@@ -27,16 +27,17 @@ export enum OrderStatuses {
     FINISHED = "3",
     FAILED = "4",
     REJECTED = "5",
-    SENDING = "6"
+    SENDING = "6",
+    PARTIALLY_PAID = "7",
 }
 
 export enum OrderType {
-    BUY = "Buy",
-    SELL = "Sell",
+    BUY = "Deposit",
+    SELL = "Withdrawal",
     WIN = "Win",
     LOSS = "Loss",
     PLAY = "Play",
-    BONUS = "Bonus"
+    BONUS = "Bonus",
 }
 // "Buy" | "Sell" | "Win" | "Loss" | "Play" | "Bonus"
 export enum InvoiceStatuses {
@@ -48,5 +49,5 @@ export enum InvoiceStatuses {
     FINISHED = "6",
     FAILED = "7",
     REFUNDED = "8",
-    EXPIRED = "9"
+    EXPIRED = "9",
 }

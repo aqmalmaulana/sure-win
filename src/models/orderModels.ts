@@ -1,5 +1,5 @@
-import { Document, model, Schema } from 'mongoose';
-import { v4 as uuid } from 'uuid';
+import { Document, model, Schema } from "mongoose";
+import { v4 as uuid } from "uuid";
 
 export interface IOrder extends Document {
     id: string;
@@ -24,43 +24,46 @@ export interface IOrder extends Document {
     hash: string;
 }
 
-const orderSchema = new Schema<IOrder>({
-    _id: { type: String },
-    cifId: { type: String, required: true },
-    trxRefNo: { type: String },
-    description: { type: String, required: true },
-    priceAmount: { type: String, required: true },
-    priceCurrency: { type: String, required: true },
-    status: { type: String, required: true },
-    type: { type: String, required: true },
-    productId: String,
-    gameId: String,
-    amount: { type: String, required: true },
-    payAddress: String,
-    payAmount: String,
-    payCurrency: String,
-    purchaseId: String,
-    paymentId: String,
-    createdAt: Date,
-    updatedAt: Date,
-    remark: String,
-    hash: String,
-},{
-    toJSON: {
-      virtuals: true,
-      transform: function(doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-      },
+const orderSchema = new Schema<IOrder>(
+    {
+        _id: { type: String },
+        cifId: { type: String, required: true },
+        trxRefNo: { type: String },
+        description: { type: String, required: true },
+        priceAmount: { type: String },
+        priceCurrency: { type: String, required: true },
+        status: { type: String, required: true },
+        type: { type: String, required: true },
+        productId: String,
+        gameId: String,
+        amount: { type: String, required: true },
+        payAddress: String,
+        payAmount: String,
+        payCurrency: String,
+        purchaseId: String,
+        paymentId: String,
+        createdAt: Date,
+        updatedAt: Date,
+        remark: String,
+        hash: String,
     },
-    toObject: {
-      virtuals: true,
-      transform: function(doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-      },
+    {
+        toJSON: {
+            virtuals: true,
+            transform: function (doc, ret) {
+                ret.id = ret._id;
+                delete ret._id;
+            },
+        },
+        toObject: {
+            virtuals: true,
+            transform: function (doc, ret) {
+                ret.id = ret._id;
+                delete ret._id;
+            },
+        },
+        versionKey: false,
     },
-    versionKey: false
-})
+);
 
-export default model<IOrder>('order', orderSchema)
+export default model<IOrder>("order", orderSchema);

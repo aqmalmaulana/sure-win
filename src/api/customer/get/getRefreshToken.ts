@@ -3,11 +3,12 @@ import { ErrorType } from "../../../enum";
 import { BusinessError } from "../../../helper/handleError";
 import { Validation, Validator } from "../../../helper/validator";
 import { apiRouter } from "../../../interfaces";
+import { ExternalJWTService } from "../../../services/external/externalJWTService";
 import { CustomerService } from "../../../services/internal/customerService";
 
-const path = "/v1/customer/:id";
+const path = "/v1/customer/token/:id";
 const method = "GET";
-const auth = "user";
+const auth = "cookie";
 
 const paramsValidation: Validation[] = [
     {
@@ -30,14 +31,18 @@ const main = async (req: Request, res: Response) => {
         throw new BusinessError("Invalid User", ErrorType.NotFound);
     }
 
-    return res.status(200).send(customer);
+    const externalJWTService = new ExternalJWTService();
+    const accessToken = externalJWTService.createAccessToken({ id: customer.id, rid: customer.roleId });
+    return res.status(200).send({
+        accessToken,
+    });
 };
 
-const getCustomerById: apiRouter = {
+const getRefreshToken: apiRouter = {
     path,
     method,
     main,
     auth,
 };
 
-export default getCustomerById;
+export default getRefreshToken;
