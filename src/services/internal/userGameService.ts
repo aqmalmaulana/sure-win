@@ -73,6 +73,7 @@ export class UserGameService {
         page: number,
         limit: number,
         type: string,
+        gameTypeId: string,
     ): Promise<{ data: IUserGame[]; count: number }> {
         const typeSearch = type.toUpperCase();
         const skipIndex = (page - 1) * limit;
@@ -80,6 +81,7 @@ export class UserGameService {
         const userGame = await this.userGame
             .find({
                 cifId,
+                gameTypeId,
                 ...(typeSearch === "ALL" ? { result: { $in: ["WIN", "LOSS", "PENDING"] } } : { result: typeSearch }),
             })
             .skip(skipIndex)
@@ -89,6 +91,7 @@ export class UserGameService {
 
         const count = await this.userGame.countDocuments({
             cifId,
+            gameTypeId,
             ...(typeSearch === "ALL" ? { result: { $in: ["WIN", "LOSS", "PENDING"] } } : { result: typeSearch }),
         });
         return { data: userGame, count: count === 0 ? 1 : count };

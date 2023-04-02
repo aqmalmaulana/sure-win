@@ -165,8 +165,7 @@ const main = async (req: Request, res: Response) => {
 
                 if (collectProductIdNumberNotChoosed.length > 0) {
                     const randomIndex = Math.floor(Math.random() * collectProductIdNumberNotChoosed.length);
-                    console.log(randomIndex);
-                    console.log(randomIndex);
+
                     if (!filteredWinner[category]) {
                         filteredWinner[category] = {
                             productId: collectProductIdNumberNotChoosed[randomIndex],
@@ -223,9 +222,8 @@ const main = async (req: Request, res: Response) => {
                         const getProducts = products.filter((product) => {
                             return product.category === category;
                         });
-                        console.log(getProducts.length);
+
                         const randomIndex = Math.floor(Math.random() * getProducts.length);
-                        console.log(randomIndex);
 
                         filteredWinner[category] = {
                             productId: getProducts[randomIndex].id,
@@ -235,7 +233,6 @@ const main = async (req: Request, res: Response) => {
                     }
                 }
 
-                console.log(filteredWinner[category]);
                 totalWinner += filteredWinner[category].totalWinnerByCategory;
                 winnerProductId.push(filteredWinner[category].productId);
             }

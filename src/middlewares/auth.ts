@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { ErrorType, RoleID } from "../enum";
 import { BusinessError } from "../helper/handleError";
-import { ExternalJWTService } from "../services/external/externalJWTService";
 import crypto from "crypto";
 import { Config } from "../config";
+import { ExternalJWTService } from "../services/external/externalJwtService";
 
 export const authUser = (req: Request, res: Response, next: NextFunction) => {
     const auth = req.headers?.authorization;
@@ -68,7 +68,6 @@ export const authCronjob = (req: Request, res: Response, next: NextFunction) => 
 
 export const authCookie = (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies["token"];
-    console.log(req.originalUrl);
     if (token) {
         const externalJWTService = new ExternalJWTService();
         const check: any = externalJWTService.verifyRefreshToken(token);

@@ -47,7 +47,7 @@ export class ResponseEstimatedPrice {
 }
 
 export class PostWithdrawalExternal {
-    ipn_callback_url: string;
+    ipn_callback_url?: string;
     withdrawals: Array<{
         address: string;
         currency: "TRX" | string;

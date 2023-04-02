@@ -7,7 +7,7 @@ class RedisService {
     constructor() {
         const config = new Config();
         this.redisClient = createClient({
-            url: `redis://default:${config.redisPassword}@${config.redisHost}:${config.redisPort}`,
+            url: config.redisUri,
         });
 
         this.redisClient.on("error", (error) => {

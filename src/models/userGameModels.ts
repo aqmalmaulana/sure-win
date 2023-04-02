@@ -6,6 +6,7 @@ export interface IUserGame extends Document {
     cifId: string;
     gameId: string;
     productId: string;
+    gameTypeId: string;
     spent: string;
     result: string;
     createdAt: Date;
@@ -26,6 +27,10 @@ const useGameSchema = new Schema<IUserGame>(
             required: true,
         },
         productId: {
+            type: String,
+            required: true,
+        },
+        gameTypeId: {
             type: String,
             required: true,
         },

@@ -3,7 +3,6 @@ import { ErrorType } from "../../../enum";
 import { BusinessError } from "../../../helper/handleError";
 import { Validation, Validator } from "../../../helper/validator";
 import { apiRouter } from "../../../interfaces";
-import { ExternalJWTService } from "../../../services/external/externalJWTService";
 import { CustomerService } from "../../../services/internal/customerService";
 import speakeasy from "speakeasy";
 import QRCode from "qrcode";

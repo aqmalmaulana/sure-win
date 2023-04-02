@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { InvoiceStatuses, OrderStatuses, OrderType } from "../../../enum";
+import { ErrorType, InvoiceStatuses, OrderStatuses, OrderType } from "../../../enum";
 import { Validation, Validator } from "../../../helper/validator";
 import { apiRouter } from "../../../interfaces";
 import { OrderSerivce } from "../../../services/internal/orderService";
@@ -8,6 +8,7 @@ import { Config } from "../../../config";
 import { FundService } from "../../../services/internal/fundsService";
 import Big from "big.js";
 import { OrderDto } from "../../../dto/orderDto";
+import { BusinessError } from "../../../helper/handleError";
 
 const path = "/v1/order/back-url-withdrawal";
 const method = "POST";
@@ -35,7 +36,7 @@ const bodyValidation: Validation[] = [
         required: true,
     },
     {
-        name: "batchWithdrawalId",
+        name: "batch_withdrawal_id",
         type: "string",
     },
     {
@@ -52,18 +53,22 @@ const bodyValidation: Validation[] = [
     },
     {
         name: "error",
+        type: "any",
+    },
+    {
+        name: "ipn_callback_url",
         type: "string",
     },
     {
-        name: "createdAt",
+        name: "created_at",
         type: "string",
     },
     {
-        name: "requestedAt",
+        name: "requested_at",
         type: "string",
     },
     {
-        name: "updatedAt",
+        name: "updated_at",
         type: "string",
     },
 ];
@@ -73,20 +78,21 @@ const main = async (req: Request, res: Response) => {
         address: string;
         currency: string;
         amount: string;
-        batchWithdrawalId: string;
+        batch_withdrawal_id: string;
         status: string;
         extra_id: string;
         hash: string;
         error: string;
-        createdAt: string;
-        requestedAt: string;
-        updatedAt: string;
+        ipn_callback_url: string;
+        created_at: string;
+        requested_at: string;
+        updated_at: string;
     } = new Validator(req, res).process(bodyValidation, "body");
     if (!requestBody) {
         return;
     }
 
-    console.log(requestBody);
+    console.log(req.body);
 
     const orderService = new OrderSerivce();
     const order = await orderService.findByPaymentId(requestBody.id, OrderType.SELL);
@@ -94,9 +100,31 @@ const main = async (req: Request, res: Response) => {
         throw new Error("Something wrong with payout ID");
     }
 
-    const newStatus = OrderStatuses[requestBody.status.toUpperCase()];
+    let newStatus = OrderStatuses[requestBody.status.toUpperCase()];
+
+    if (requestBody.status === "CREATING") {
+        newStatus = OrderStatuses.WAITING;
+    }
+
     if (!newStatus) {
         throw new Error("Something wrong with status " + requestBody.status);
+    }
+
+    let amt;
+    let floatValue = parseFloat(requestBody.amount);
+    if (Number.isNaN(floatValue)) {
+        throw new BusinessError("Invalid amount", ErrorType.Validation);
+    }
+
+    if (floatValue === Math.floor(floatValue)) {
+        amt = Math.floor(floatValue).toString();
+    } else {
+        let decimalDigits = floatValue.toString().split(".")[1];
+        if (decimalDigits.length <= 6) {
+            amt = floatValue.toString();
+        } else {
+            amt = floatValue.toFixed(6);
+        }
     }
 
     let data: OrderDto = {
@@ -111,7 +139,7 @@ const main = async (req: Request, res: Response) => {
         payAddress: requestBody.address,
         payAmount: requestBody.amount,
         payCurrency: requestBody.currency,
-        purchaseId: requestBody.batchWithdrawalId,
+        purchaseId: requestBody.batch_withdrawal_id,
         paymentId: requestBody.id,
         updatedAt: new Date(),
         hash: requestBody.hash,

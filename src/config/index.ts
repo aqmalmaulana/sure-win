@@ -7,9 +7,7 @@ export class Config {
     public jwtRefreshToken = process.env.JWT_REFRESH_TOKEN;
     public uriMongoDb = process.env.URI_MONGO_DB || "mongodb://localhost:27017/jostech";
 
-    public redisHost = process.env.REDIS_HOST || "127.0.0.1";
-    public redisPassword = process.env.REDIS_PASSWORD || "redis";
-    public redisPort = process.env.REDIS_PORT || "6379";
+    public redisUri = process.env.REDIS_URI || "redis://default:redis@127.0.0.1:6379";
 
     public nowPaymentsEmail = process.env.NOW_PAYMENTS_EMAIL;
     public nowPaymentsPassword = process.env.NOW_PAYMENTS_PASSWORD;
@@ -17,10 +15,11 @@ export class Config {
     public nowPaymentsApiKey = process.env.NOW_PAYMENTS_API_KEY;
     public nowPaymentsSecretKey = process.env.NOW_PAYMENTS_SECRET_KEY;
 
-    public minDeposit = process.env.MIN_DEPOSIT || 50;
-    public minWithdrawal = process.env.MIN_WITHDRAWAL || 50;
+    public minDeposit = process.env.MIN_DEPOSIT || "50";
+    public minWithdrawal = process.env.MIN_WITHDRAWAL || "50";
 
     public callbackUrl = process.env.CALLBACK_URL;
+    public withdrawalCallbackUrl = process.env.WITHDRAWAL_CALLBACK_URL;
     public backUrl = process.env.BACK_URL;
 
     public secretKeySpeakEasy = process.env.SECRET_KEY_SPEAKEASY;

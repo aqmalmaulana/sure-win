@@ -51,7 +51,7 @@ const main = async (req: Request, res: Response) => {
     }
 
     const config = new Config();
-    if (parseFloat(requestBody.amount) < config.minWithdrawal) {
+    if (parseFloat(requestBody.amount) < parseFloat(config.minWithdrawal)) {
         throw new BusinessError("Inadequate minimum withdrawal", ErrorType.Validation);
     }
 
@@ -67,98 +67,145 @@ const main = async (req: Request, res: Response) => {
         throw new BusinessError("Something error with your fund", ErrorType.Internal);
     }
 
-    if (parseFloat(fund.balance) < config.minWithdrawal) {
+    if (parseFloat(fund.balance) < parseFloat(config.minWithdrawal)) {
         throw new BusinessError("Does not meet the withdrawal requirements - 1", ErrorType.Validation);
+    }
+    let amt;
+    let floatValue = parseFloat(requestBody.amount);
+    if (Number.isNaN(floatValue)) {
+        throw new BusinessError("Invalid amount", ErrorType.Validation);
+    }
+
+    if (floatValue === Math.floor(floatValue)) {
+        amt = Math.floor(floatValue).toString();
+    } else {
+        let decimalDigits = floatValue.toString().split(".")[1];
+        if (decimalDigits.length <= 6) {
+            amt = floatValue.toString();
+        } else {
+            amt = floatValue.toFixed(6);
+        }
     }
 
     const trxRefNo = await UniqueGenerator.invoice(customer, OrderType.SELL);
     const orderService = new OrderSerivce();
-    const newOrder: OrderDto = {
-        cifId: customer.id,
-        trxRefNo,
-        description: `Withdrawal for ${customer.username} - ${requestBody.amount}`,
-        priceAmount: requestBody.amount,
-        priceCurrency: requestBody.currency,
-        status: OrderStatuses.WAITING,
-        type: OrderType.SELL,
-        amount: requestBody.amount,
-        payAddress: requestBody.address,
-        payAmount: requestBody.amount,
-        payCurrency: requestBody.currency,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    };
-    const order = await orderService.create(newOrder);
+    if (config.nodeEnv === "DEVELOPMENT") {
+        const newOrder: OrderDto = {
+            cifId: customer.id,
+            trxRefNo,
+            description: `Withdrawal for ${customer.username} - ${amt}`,
+            priceAmount: amt,
+            priceCurrency: requestBody.currency,
+            status: OrderStatuses.FINISHED,
+            type: OrderType.SELL,
+            amount: amt,
+            payAddress: requestBody.address,
+            payAmount: amt,
+            payCurrency: requestBody.currency,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
+        const order = await orderService.create(newOrder);
+        const fundService = new FundService();
+        const fund = await fundService.findFundByCifId(customer.id);
+        await fundService.update({
+            cifId: customer.id,
+            currency: fund.currency,
+            balance: new Big(fund.balance).minus(new Big(amt)).toString(),
+            updatedAt: new Date(),
+        });
+        return res.status(200).send(order);
+    } else {
+        const newOrder: OrderDto = {
+            cifId: customer.id,
+            trxRefNo,
+            description: `Withdrawal for ${customer.username} - ${amt}`,
+            priceAmount: amt,
+            priceCurrency: requestBody.currency,
+            status: OrderStatuses.WAITING,
+            type: OrderType.SELL,
+            amount: amt,
+            payAddress: requestBody.address,
+            payAmount: amt,
+            payCurrency: requestBody.currency,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
+        const order = await orderService.create(newOrder);
 
-    const nowPaymentsService = new ExternalNowPaymentsService();
-    const postWithdrawal = await nowPaymentsService.postWithdrawal({
-        ipn_callback_url: "",
-        withdrawals: [
-            {
-                address: requestBody.address,
-                currency: requestBody.currency,
-                amount: parseFloat(requestBody.amount),
-                payout_description: `Request withdrawal for ${customer.username} - ${requestBody.amount}`,
-                unique_external_id: trxRefNo,
-            },
-        ],
-    });
+        const nowPaymentsService = new ExternalNowPaymentsService();
+        const postWithdrawal = await nowPaymentsService.postWithdrawal({
+            withdrawals: [
+                {
+                    address: requestBody.address,
+                    currency: "TRX",
+                    amount: parseFloat(amt),
+                    unique_external_id: trxRefNo,
+                    ipn_callback_url: config.withdrawalCallbackUrl,
+                },
+            ],
+        });
 
-    if (!postWithdrawal) {
-        await orderService.update({
+        console.log(postWithdrawal);
+
+        if (!postWithdrawal) {
+            await orderService.update({
+                cifId: customer.id,
+                trxRefNo,
+                description: `Withdrawal for ${customer.username} - ${order.amount}`,
+                priceAmount: order.priceAmount,
+                priceCurrency: order.priceCurrency,
+                status: OrderStatuses.FAILED,
+                type: OrderType.SELL,
+                amount: order.amount,
+                payAddress: order.payAddress,
+                payAmount: order.payAmount,
+                payCurrency: order.payCurrency,
+                updatedAt: new Date(),
+            });
+            throw new Error("Something wrong when withdrawal");
+        }
+
+        const verify = await nowPaymentsService.verifyWithdrawal(postWithdrawal.id);
+        if (!verify) {
+            await orderService.update({
+                cifId: customer.id,
+                trxRefNo,
+                description: `Withdrawal for ${customer.username} - ${order.amount}`,
+                priceAmount: order.priceAmount,
+                priceCurrency: order.priceCurrency,
+                status: OrderStatuses.FAILED,
+                type: OrderType.SELL,
+                amount: order.amount,
+                payAddress: order.payAddress,
+                payAmount: order.payAmount,
+                payCurrency: order.payCurrency,
+                updatedAt: new Date(),
+            });
+            throw new Error("Something wrong when verify withdrawal");
+        }
+
+        console.log(verify);
+
+        const updatedOrder = await orderService.update({
             cifId: customer.id,
             trxRefNo,
             description: `Withdrawal for ${customer.username} - ${order.amount}`,
             priceAmount: order.priceAmount,
             priceCurrency: order.priceCurrency,
-            status: OrderStatuses.FAILED,
+            status: OrderStatuses.WAITING,
             type: OrderType.SELL,
             amount: order.amount,
             payAddress: order.payAddress,
             payAmount: order.payAmount,
             payCurrency: order.payCurrency,
             updatedAt: new Date(),
+            paymentId: postWithdrawal.withdrawals[0].id,
+            purchaseId: postWithdrawal.withdrawals[0].batch_withdrawal_id,
         });
-        throw new Error("Something wrong when withdrawal");
+
+        return res.status(200).send(updatedOrder);
     }
-
-    const verify = await nowPaymentsService.verifyWithdrawal(postWithdrawal.id);
-    if (!verify) {
-        await orderService.update({
-            cifId: customer.id,
-            trxRefNo,
-            description: `Withdrawal for ${customer.username} - ${order.amount}`,
-            priceAmount: order.priceAmount,
-            priceCurrency: order.priceCurrency,
-            status: OrderStatuses.FAILED,
-            type: OrderType.SELL,
-            amount: order.amount,
-            payAddress: order.payAddress,
-            payAmount: order.payAmount,
-            payCurrency: order.payCurrency,
-            updatedAt: new Date(),
-        });
-        throw new Error("Something wrong when verify withdrawal");
-    }
-
-    const updatedOrder = await orderService.update({
-        cifId: customer.id,
-        trxRefNo,
-        description: `Withdrawal for ${customer.username} - ${order.amount}`,
-        priceAmount: order.priceAmount,
-        priceCurrency: order.priceCurrency,
-        status: OrderStatuses.WAITING,
-        type: OrderType.SELL,
-        amount: order.amount,
-        payAddress: order.payAddress,
-        payAmount: order.payAmount,
-        payCurrency: order.payCurrency,
-        updatedAt: new Date(),
-        paymentId: postWithdrawal.withdrawals[0].id,
-        purchaseId: postWithdrawal.withdrawals[0].batch_withdrawal_id,
-    });
-
-    return res.status(200).send(updatedOrder);
 };
 
 const postCashOut: apiRouter = {

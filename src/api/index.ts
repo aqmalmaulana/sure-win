@@ -17,7 +17,6 @@ import getCronjobCreateAndResultGame from "./game/crobjob/getCronjobCreateAndRes
 import getAllGames from "./game/get/getAllGames";
 import getGameType from "./game/get/getGameType";
 import getLatestGame from "./game/get/getLatestGame";
-import getResultGame from "./game/get/getResult";
 import getUserGameHistory from "./game/get/getUserHistory";
 import postGameType from "./game/post/postGameType";
 import postUserGame from "./game/post/postUserGame";
@@ -66,7 +65,6 @@ const apis = [
     getGameType,
     getLatestGame,
     getAllGames,
-    getResultGame,
     getUserGameHistory,
 
     // Fund

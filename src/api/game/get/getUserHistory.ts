@@ -10,7 +10,7 @@ import { GameService } from "../../../services/internal/gameService";
 import { GameTypeService } from "../../../services/internal/gameTypeService";
 import { UserGameService } from "../../../services/internal/userGameService";
 
-const path = "/v1/result-game/user/:id";
+const path = "/v1/result-game-user/:id";
 const method = "GET";
 const auth = "user";
 
@@ -72,18 +72,19 @@ const main = async (req: Request, res: Response) => {
         parseInt(query.page),
         parseInt(query.size),
         query.type,
+        query.gameTypeId,
     );
 
     const collectGameId = userGames.data.map((data) => data.gameId);
     const gameService = new GameService();
     const games = await gameService.findGamesById(collectGameId);
 
-    const filterByGameTypeId = games.filter((game) => game.gameTypeId === query.gameTypeId);
-    const collectGameIdFiltered = filterByGameTypeId.map((game) => game.id);
-    const filterDataUser = userGames.data.filter((userGame) => collectGameIdFiltered.includes(userGame.id));
+    // const filterByGameTypeId = games.filter((game) => game.gameTypeId === query.gameTypeId);
+    // const collectGameIdFiltered = filterByGameTypeId.map((game) => game.id);
+    // const filterDataUser = userGames.data.filter((userGame) => collectGameIdFiltered.includes(userGame.gameId));
 
-    const newData = filterDataUser.map((data) => {
-        const game = filterByGameTypeId.find((gm) => gm.id === data.gameId);
+    const newData = userGames.data.map((data) => {
+        const game = games.find((gm) => gm.id === data.gameId);
 
         return {
             ...data.toObject(),
@@ -93,11 +94,11 @@ const main = async (req: Request, res: Response) => {
 
     res.status(200).send({
         page: query.page,
-        totalPage: Math.ceil(filterDataUser.length / parseInt(query.size)),
+        totalPage: Math.ceil(userGames.count / parseInt(query.size)),
         size: query.size,
         type: query.type,
         data: newData,
-        totalData: filterDataUser.length,
+        totalData: userGames.count,
     });
     return;
 };

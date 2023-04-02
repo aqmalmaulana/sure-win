@@ -47,7 +47,7 @@ const main = async (req: Request, res: Response) => {
         return;
     }
     const config = new Config();
-    if (parseFloat(requestBody.amount) < config.minDeposit) {
+    if (parseFloat(requestBody.amount) < parseFloat(config.minDeposit)) {
         throw new BusinessError(`Minimum for cash in ${config.minDeposit} TRX`, ErrorType.Validation);
     }
 

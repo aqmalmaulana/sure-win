@@ -3,7 +3,7 @@ import { ErrorType } from "../../../enum";
 import { BusinessError } from "../../../helper/handleError";
 import { Validation, Validator } from "../../../helper/validator";
 import { apiRouter } from "../../../interfaces";
-import { ExternalJWTService } from "../../../services/external/externalJWTService";
+import { ExternalJWTService } from "../../../services/external/externalJwtService";
 import { CustomerService } from "../../../services/internal/customerService";
 
 const path = "/v1/customer/token/:id";

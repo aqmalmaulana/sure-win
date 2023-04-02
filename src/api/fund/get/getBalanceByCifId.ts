@@ -37,7 +37,6 @@ const main = async (req: Request, res: Response) => {
 
     const orderService = new OrderSerivce();
     const orders = await orderService.findOrdersPendingByCifIdAndType(customer.id, OrderType.SELL);
-    console.log(orders);
 
     let actualBalance = new Big(fund.balance);
     let totalPending = new Big("0");

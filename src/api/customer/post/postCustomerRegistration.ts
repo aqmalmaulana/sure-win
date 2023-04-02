@@ -10,7 +10,7 @@ import { OrderSerivce } from "../../../services/internal/orderService";
 import { Config } from "../../../config";
 import { UniqueGenerator } from "../../../helper/uniqueGenerator";
 import { FundsDto } from "../../../dto/fundsDto";
-import { ExternalJWTService } from "../../../services/external/externalJWTService";
+import { ExternalJWTService } from "../../../services/external/externalJwtService";
 
 const path = "/v1/customer/registration";
 const method = "POST";

@@ -33,6 +33,11 @@ const bodyValidation: Validation[] = [
         required: true,
     },
     {
+        name: "gameTypeId",
+        type: "string",
+        required: true,
+    },
+    {
         name: "amount",
         type: "string",
         required: true,
@@ -51,6 +56,7 @@ const main = async (req: Request, res: Response) => {
         productId: string;
         amount: string;
         currency: string;
+        gameTypeId: string;
     } = new Validator(req, res).process(bodyValidation, "body");
     if (!requestBody) {
         return;
@@ -87,7 +93,6 @@ const main = async (req: Request, res: Response) => {
     if (fundBonus.gt(new Big("0"))) {
         if (spentAmount.lte(fundBonus)) {
             fundBonus = fundBonus.minus(spentAmount);
-            console.log();
         } else {
             fundBonus = fundBonus = new Big("0");
             const remain = spentAmount.minus(fundBonus);
@@ -97,9 +102,6 @@ const main = async (req: Request, res: Response) => {
         fundBalance = fundBalance.minus(spentAmount);
     }
 
-    console.log(fundBonus.toString());
-    console.log(fundBalance.toString());
-
     const userGameService = new UserGameService();
     const createUserGame = await userGameService.create({
         cifId: customer.id,
@@ -107,6 +109,7 @@ const main = async (req: Request, res: Response) => {
         productId: requestBody.productId,
         spent: requestBody.amount,
         result: "PENDING",
+        gameTypeId: requestBody.gameTypeId,
         createdAt: new Date(),
         updatedAt: new Date(),
     });
