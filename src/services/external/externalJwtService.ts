@@ -12,7 +12,7 @@ export class ExternalJWTService {
 
     public createAccessToken(data: any) {
         return jwt.sign(data, this.accessToken, {
-            expiresIn: "100s",
+            expiresIn: "7d",
         });
     }
 

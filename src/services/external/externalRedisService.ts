@@ -16,6 +16,9 @@ class RedisService {
     }
 
     public async setJson(key: string, value: any, ttl?: number): Promise<any> {
+        if (!ttl) {
+            ttl = 60 * 60 * 24 * 7;
+        }
         const jsonValue = JSON.stringify(value);
         return await this.set(key, jsonValue, ttl);
     }
