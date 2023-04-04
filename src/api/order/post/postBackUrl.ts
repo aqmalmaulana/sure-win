@@ -182,12 +182,18 @@ const main = async (req: Request, res: Response) => {
         const fundService = new FundService();
         const fund = await fundService.findFundByCifId(updatedOrder.cifId);
         const newBalance = new Big(fund.balance).add(updatedOrder.payAmount);
-
+        let plusOpenBox;
+        if (parseInt(updatedOrder.payAmount) > 100) {
+            plusOpenBox = Math.floor(parseInt(updatedOrder.payAmount) / 100);
+        } else {
+            plusOpenBox = 1;
+        }
         await fundService.update({
             cifId: fund.cifId,
             currency: fund.currency,
             balance: newBalance.toString(),
             updatedAt: new Date(),
+            countOpenBox: fund.countOpenBox + plusOpenBox,
         });
     }
 

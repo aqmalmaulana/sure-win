@@ -86,6 +86,7 @@ const main = async (req: Request, res: Response) => {
         cifId: newCustomer.id,
         currency: "TRX",
         balance: "0",
+        countOpenBox: 0,
         updatedAt: new Date(),
     };
     const totalUser = await customerService.countUser();

@@ -102,4 +102,11 @@ export class UserGameService {
             gameId: { $in: ids },
         });
     }
+
+    async findUsersGameByPeriode(startFrom: Date, finishedAt: Date, result: "WIN" | "LOSS"): Promise<IUserGame[]> {
+        return await this.userGame.find({
+            createdAt: { $gt: startFrom, $lt: finishedAt },
+            result,
+        });
+    }
 }

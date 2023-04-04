@@ -30,6 +30,7 @@ import postCashOut from "./order/post/postCashOut";
 import getAllProducts from "./product/get/getAllProducts";
 import getProductsByType from "./product/get/getProductsByType";
 import postProduct from "./product/post/postProduct";
+import getRewardBoxBonus from "./fund/get/getRewardBoxBonus";
 
 let router = Router();
 
@@ -69,6 +70,7 @@ const apis = [
 
     // Fund
     getBalanceByCifId,
+    getRewardBoxBonus,
 
     // Order
     getInvoiceByExternalInvoiceId,

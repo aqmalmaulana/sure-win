@@ -1,6 +1,6 @@
 import Big from "big.js";
 import { Request, Response } from "express";
-import { ErrorType } from "../../../enum";
+import { ErrorType, OrderStatuses } from "../../../enum";
 import { BusinessError } from "../../../helper/handleError";
 import { Validation, Validator } from "../../../helper/validator";
 import { apiRouter } from "../../../interfaces";
@@ -66,12 +66,32 @@ const main = async (req: Request, res: Response) => {
         query.type,
     );
 
+    let cloneTrx = JSON.parse(JSON.stringify(transactions.transactions));
+    const checkPending = transactions.transactions.filter((trx) => trx.status === OrderStatuses.WAITING);
+    if (checkPending.length > 0) {
+        const trxRefNoCollection = checkPending.map((trx) => trx.trxRefNo);
+        const invoiceService = new InvoiceService();
+        const invoices = await invoiceService.findInvoicesByTrxRefNo(trxRefNoCollection);
+
+        cloneTrx = cloneTrx.map((trx) => {
+            const invoice = invoices.find((invoice) => invoice.trxRefNo === trx.trxRefNo);
+            if (trxRefNoCollection.includes(trx.trxRefNo) && invoice) {
+                trx = {
+                    ...trx,
+                    invoiceUrl: invoice.invoiceUrl,
+                };
+            }
+
+            return trx;
+        });
+    }
+
     res.status(200).send({
         page: query.page,
         totalPage: Math.ceil(transactions.count / parseInt(query.size)),
         size: query.size,
         type: query.type,
-        data: transactions.transactions,
+        data: cloneTrx,
         totalData: transactions.count,
     });
 };
