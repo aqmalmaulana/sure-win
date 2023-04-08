@@ -9,21 +9,16 @@ import { authSignSureWin } from "./middlewares/auth";
 import morgan from "morgan";
 
 const getApp = (app: Application) => {
+    const allowOrigin = process.env.ORIGIN_CORS.split(",");
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(
         cors({
-            origin: [process.env.ORIGIN_CORS, "https://sandbox.nowpayments.io"],
+            origin: allowOrigin,
             credentials: true,
         }),
     );
     app.use(morgan("tiny"));
-    app.use((req, res, next) => {
-        console.log(req.headers["x-forwarded-for"]);
-        console.log(req.connection.remoteAddress);
-        console.log(req.socket.remoteAddress);
-        next();
-    });
     app.use(authSignSureWin);
     app.use(cookieParser());
     app.use(router);

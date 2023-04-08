@@ -146,8 +146,6 @@ const main = async (req: Request, res: Response) => {
             ],
         });
 
-        console.log(postWithdrawal);
-
         if (!postWithdrawal) {
             await orderService.update({
                 cifId: customer.id,
@@ -184,8 +182,6 @@ const main = async (req: Request, res: Response) => {
             });
             throw new Error("Something wrong when verify withdrawal");
         }
-
-        console.log(verify);
 
         const updatedOrder = await orderService.update({
             cifId: customer.id,

@@ -25,7 +25,6 @@ const getRandomNumber = () => {
     const randomNum = Math.floor(Math.random() * 10) + 1;
     if (randomNum > 5) {
         const probability = Math.pow(0.5, randomNum - 5);
-        console.log(probability);
         if (Math.random() < probability) {
             return randomNum;
         } else {

@@ -10,6 +10,7 @@ export interface ICustomer extends Document {
     password: string;
     authentication: boolean;
     authKey: string;
+    isActive: boolean;
     address: string;
     createdAt: Date;
     updatedAt: Date;
@@ -23,9 +24,10 @@ const customerSchema = new Schema<ICustomer>(
         username: { type: String, required: true, unique: true },
         email: { type: String, required: true, unique: true },
         accountNo: { type: String, required: true, unique: true },
-        address: { type: String, required: true, unique: true },
+        address: { type: String, required: true },
         password: { type: String, required: true, select: false },
         authKey: { type: String, required: false, select: false },
+        isActive: { type: Boolean, required: false },
         authentication: { type: Boolean, default: false },
         deleteFlag: { type: Boolean, default: false },
         roleId: { type: String, required: true },

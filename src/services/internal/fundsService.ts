@@ -54,6 +54,22 @@ export class FundService {
         return await this.fund.bulkWrite(requests);
     }
 
+    async updateWinnerTop10(datas: FundsDto[], data2: any): Promise<any> {
+        const requests = datas.map((fund) => {
+            const winner = data2.find((winner) => winner.cifId === fund.cifId);
+            let balance = new Big(fund.balance).add(new Big(winner.amount));
+
+            return {
+                updateOne: {
+                    filter: { _id: fund.id },
+                    update: { balance, updatedAt: new Date() },
+                },
+            };
+        });
+
+        return await this.fund.bulkWrite(requests);
+    }
+
     async findFundById(id: string): Promise<IFunds> {
         return this.fund.findById(id);
     }

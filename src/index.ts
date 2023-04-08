@@ -1,28 +1,28 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 import path from "path";
-dotenv.config()
+dotenv.config();
 
-if(process.env.NODE_ENV === "PRODUCTION") {
-    const envPath = path.resolve('/root/myapp/.env')
-    dotenv.config({path: envPath})
-}
+// if(process.env.NODE_ENV === "PRODUCTION") {
+//     const envPath = path.resolve('/root/myapp/.env')
+//     dotenv.config({path: envPath})
+// }
 
-import express, { Express } from 'express';
-import getApp from './app';
+import express, { Express } from "express";
+import getApp from "./app";
 
-(async()=> {
+(async () => {
     try {
-        if(process.env.NODE_ENV === "DEVELOPMENT") {
-            console.log(process.env)
+        if (process.env.NODE_ENV === "DEVELOPMENT") {
+            console.log(process.env);
         }
         const app: Express = express();
         const port = process.env.PORT || 3000;
-        const main = getApp(app)
+        const main = getApp(app);
 
         app.listen(port, () => {
-            console.log(`⚡️[server]: Server is running at ${port}`);
+            console.log(`⚡️[${process.env.NODE_ENV}]: Server is running at ${port}`);
         });
     } catch (error) {
-       console.log(error) 
+        console.log(error);
     }
-})()
+})();

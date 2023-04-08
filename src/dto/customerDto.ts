@@ -7,6 +7,7 @@ export class CustomerDto {
     public address: string;
     public authentication?: boolean;
     public authKey?: string;
+    public isActive?: boolean;
     public createdAt?: Date;
     public updatedAt?: Date;
     public deleteFlag?: boolean;

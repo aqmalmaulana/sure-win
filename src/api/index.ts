@@ -31,6 +31,8 @@ import getAllProducts from "./product/get/getAllProducts";
 import getProductsByType from "./product/get/getProductsByType";
 import postProduct from "./product/post/postProduct";
 import getRewardBoxBonus from "./fund/get/getRewardBoxBonus";
+import postOtpLoginorRegister from "./customer/post/postOtpLoginorRegister";
+import getNewOtp from "./customer/get/getNewOtp";
 
 let router = Router();
 
@@ -48,6 +50,8 @@ const apis = [
     postActivateAuthenticator,
     putRemoveAuthenticator,
     postConfirmLogin,
+    postOtpLoginorRegister,
+    getNewOtp,
 
     // Order
     postCashIn,

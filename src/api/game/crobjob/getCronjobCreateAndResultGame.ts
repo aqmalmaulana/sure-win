@@ -17,7 +17,7 @@ import { UserGameDto } from "../../../dto/userGameDto";
 
 const path = "/v1/cronjob/game";
 const method = "GET";
-const auth = "guess";
+const auth = "cronjob";
 
 const queryValidation: Validation[] = [
     {

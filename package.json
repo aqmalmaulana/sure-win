@@ -5,8 +5,9 @@
     "main": "dist/index.js",
     "scripts": {
         "build": "rm -r dist && tsc",
-        "start": "node .",
-        "dev": "nodemon src/index.ts"
+        "start:stage": "NODE_ENV=STAGE node .",
+        "start:prod": "NODE_ENV=PRODUCTION node .",
+        "dev": "NODE_ENV=DEVELOPMENT nodemon --exec \"ts-node src/index.ts\""
     },
     "author": {
         "name": "Kwait Koosan"
@@ -27,6 +28,7 @@
         "node-fetch": "^2.6.9",
         "node-mailer": "^0.1.1",
         "qrcode": "^1.5.1",
+        "randomatic": "^3.1.1",
         "redis": "^3.1.2",
         "speakeasy": "^2.0.0",
         "uuid": "^9.0.0",

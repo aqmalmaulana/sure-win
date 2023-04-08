@@ -34,4 +34,10 @@ export class Config {
     public bucketEndpoint = process.env.BUCKET_ENDPOINT;
 
     public signAppKey = process.env.SIGN_APP_KEY;
+
+    public smtpHost = process.env.SMTP_HOST;
+    public smtpPassword = process.env.SMTP_PASSWORD;
+    public smtpUsername = process.env.SMTP_USERNAME;
+    public smtpPort = parseInt(process.env.SMTP_PORT);
+    public smtpSender = process.env.SMTP_EMAIL_SENDER;
 }
